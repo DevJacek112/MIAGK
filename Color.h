@@ -16,12 +16,8 @@ public:
     int _b = 0;
     int _a = 0;
 
-    Color(int r, int g, int b, int a)
-        : _r(r),
-          _g(g),
-          _b(b),
-          _a(a)  {
-    }
+    Color(int r, int g, int b, int a);
+
 };
 
 

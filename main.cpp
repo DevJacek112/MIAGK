@@ -6,23 +6,18 @@
 #include "TGAWriter.h"
 
 int main() {
-    std::shared_ptr<Color> colors[3] {
-        std::make_shared<Color>(255, 0, 0, 122),
-        std::make_shared<Color>(0, 255, 0, 122),
-        std::make_shared<Color>(0, 0, 255, 122)
-    };
 
-    TGAWriter writer;
+    std::shared_ptr<Color> red = std::make_shared<Color>(255, 0, 0, 122);
+    std::shared_ptr<Color> green = std::make_shared<Color>(0, 255, 0, 122);
+    std::shared_ptr<Color> blue = std::make_shared<Color>(0, 0, 255, 122);
+    std::shared_ptr<Color> white = std::make_shared<Color>(255, 255, 255, 122);
+    std::shared_ptr<Color> black = std::make_shared<Color>(0, 0, 0, 122);
 
-    auto pixelBuffer = std::make_shared<PixelBuffer>(500, 100, colors[1]);
+    auto pixelBuffer = std::make_shared<PixelBuffer>(500, 100);
 
+    pixelBuffer->SetAllPixels(blue);
 
-    pixelBuffer->SetAllPixels(colors[1]);
-    pixelBuffer->SetPixelColor(1, 0, colors[0]);
-    std::cout << pixelBuffer->GetPixel(2,2)._g << std::endl;
-    std::cout << pixelBuffer->GetPixel(1,0)._r << std::endl;
-
-    writer.SaveToTGA("test.tga", pixelBuffer);
+    TGAWriter::SaveToTGA("test.tga", pixelBuffer);
 
     return 0;
 }
