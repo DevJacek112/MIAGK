@@ -13,11 +13,18 @@ int main() {
     std::shared_ptr<Color> white = std::make_shared<Color>(255, 255, 255, 122);
     std::shared_ptr<Color> black = std::make_shared<Color>(0, 0, 0, 122);
 
-    auto pixelBuffer = std::make_shared<PixelBuffer>(500, 100);
+    auto pixelBuffer = std::make_shared<PixelBuffer>(500, 500);
 
     pixelBuffer->SetAllPixels(blue);
+
+    pixelBuffer->DrawTriangle(10, 50, 0, 230, 500, 500, red);
 
     TGAWriter::SaveToTGA("test.tga", pixelBuffer);
 
     return 0;
 }
+
+
+
+
+

@@ -22,6 +22,7 @@ public:
     void SetPixelColor(int x, int y, std::shared_ptr<Color> color);
     Color GetPixel(int x, int y) const;
     void SetAllPixels(std::shared_ptr<Color> color);
+    void DrawTriangle(int x1, int y1, int x2, int y2, int x3, int y3, std::shared_ptr<Color> color);
 };
 
 #endif // PIXELBUFFER_H
