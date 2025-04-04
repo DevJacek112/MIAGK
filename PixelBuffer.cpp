@@ -9,18 +9,33 @@
 PixelBuffer::PixelBuffer(int width, int height)
     : _width(width),
       _height(height),
-      _pixels(width * height) {
+      _pixelsColor(width * height),
+      _pixelsDepth(width * height) {
+        for (int y = 0; y < _height; ++y) {
+            for (int x = 0; x < _width; ++x) {
+                SetPixelColor(x, y, std::make_shared<Color>(0, 0, 0, 122));
+                SetPixelDepth(x, y, -std::numeric_limits<float>::infinity());
+            }
+        }
 }
 
 void PixelBuffer::SetPixelColor(int x, int y, std::shared_ptr<Color> color) {
-    _pixels[y * _width + x] = color;
+    _pixelsColor[y * _width + x] = color;
 }
 
-Color PixelBuffer::GetPixel(int x, int y) const {
-    return *_pixels[y * _width + x];
+Color PixelBuffer::GetPixelColor(int x, int y) const {
+    return *_pixelsColor[y * _width + x];
 }
 
-void PixelBuffer::SetAllPixels(std::shared_ptr<Color> color) {
+void PixelBuffer::SetPixelDepth(int x, int y, float depth) {
+    _pixelsDepth[y * _width + x] = depth;
+}
+
+float PixelBuffer::GetPixelDepth(int x, int y) {
+    return _pixelsDepth[y * _width + x];
+}
+
+void PixelBuffer::SetAllPixelsColor(std::shared_ptr<Color> color) {
     for (int y = 0; y < _height; ++y) {
         for (int x = 0; x < _width; ++x) {
             SetPixelColor(x, y, color);
@@ -28,41 +43,43 @@ void PixelBuffer::SetAllPixels(std::shared_ptr<Color> color) {
     }
 }
 
-void PixelBuffer::DrawTriangle(float canonX1, float canonY1, std::shared_ptr<Color> color1,
-                               float canonX2, float canonY2, std::shared_ptr<Color> color2,
-                               float canonX3, float canonY3, std::shared_ptr<Color> color3) {
-    int x1 = (int) ((canonX1 + 1) * _width * 0.5f);
-    int y1 = (int) ((canonY1 + 1) * _height * 0.5f);
+void PixelBuffer::DrawTriangle(Vector3 canonV1, std::shared_ptr<Color> color1, Vector3 canonV2,
+                               std::shared_ptr<Color> color2, Vector3 canonV3, std::shared_ptr<Color> color3) {
+    Vector3 v1 = Vector3((canonV1.x + 1) * _width * 0.5f,
+                         (canonV1.y + 1) * _height * 0.5f,
+                         canonV1.z);
 
-    int x2 = (int) ((canonX2 + 1) * _width * 0.5f);
-    int y2 = (int) ((canonY2 + 1) * _height * 0.5f);
+    Vector3 v2 = Vector3((canonV2.x + 1) * _width * 0.5f,
+                         (canonV2.y + 1) * _height * 0.5f,
+                         canonV2.z);
 
-    int x3 = (int) ((canonX3 + 1) * _width * 0.5f);
-    int y3 = (int) ((canonY3 + 1) * _height * 0.5f);
+    Vector3 v3 = Vector3((canonV3.x + 1) * _width * 0.5f,
+                         (canonV3.y + 1) * _height * 0.5f,
+                         canonV3.z);
 
-    int minX = std::min(x1, x2);
-    minX = std::min(minX, x3);
-    minX = std::max(minX, 0);
+    float minX = std::min(v1.x, v2.x);
+    minX = std::min(minX, v3.x);
+    minX = std::max(minX, 0.0f);
 
-    int maxX = std::max(x1, x2);
-    maxX = std::max(maxX, x3);
-    maxX = std::min(maxX, _width - 1);
+    float maxX = std::max(v1.x, v2.x);
+    maxX = std::max(maxX, v3.x);
+    maxX = std::min(maxX, (float) _width - 1);
 
-    int minY = std::min(y1, y2);
-    minY = std::min(minY, y3);
-    minY = std::max(minY, 0);
+    float minY = std::min(v1.y, v2.y);
+    minY = std::min(minY, v3.y);
+    minY = std::max(minY, 0.0f);
 
-    int maxY = std::max(y1, y2);
-    maxY = std::max(maxY, y3);
-    maxY = std::min(maxY, _height - 1);
+    float maxY = std::max(v1.y, v2.y);
+    maxY = std::max(maxY, v3.y);
+    maxY = std::min(maxY, (float) _height - 1);
 
-    int dy12 = y1 - y2;
-    int dy23 = y2 - y3;
-    int dy31 = y3 - y1;
+    int dy12 = v1.y - v2.y;
+    int dy23 = v2.y - v3.y;
+    int dy31 = v3.y - v1.y;
 
-    int dx12 = x1 - x2;
-    int dx23 = x2 - x3;
-    int dx31 = x3 - x1;
+    int dx12 = v1.x - v2.x;
+    int dx23 = v2.x - v3.x;
+    int dx31 = v3.x - v1.x;
 
     bool tl1 = false;
     bool tl2 = false;
@@ -82,32 +99,40 @@ void PixelBuffer::DrawTriangle(float canonX1, float canonY1, std::shared_ptr<Col
 
     for (int y = minY; y < maxY; y++) {
         for (int x = minX; x < maxX; x++) {
+            //rozne warunki w zaleznosci od tego czy krawedz jest lewa albo gorna
             bool tl1BiggerThen0 = false;
             if (tl1) {
-                tl1BiggerThen0 = (x1 - x2) * (y - y1) - (y1 - y2) * (x - x1) >= 0;
+                tl1BiggerThen0 = (v1.x - v2.x) * (y - v1.y) - (v1.y - v2.y) * (x - v1.x) >= 0;
             } else {
-                tl1BiggerThen0 = (x1 - x2) * (y - y1) - (y1 - y2) * (x - x1) > 0;
+                tl1BiggerThen0 = (v1.x - v2.x) * (y - v1.y) - (v1.y - v2.y) * (x - v1.x) > 0;
             }
 
             bool tl2BiggerThen0 = false;
             if (tl2) {
-                tl2BiggerThen0 = (x2 - x3) * (y - y2) - (y2 - y3) * (x - x2) >= 0;
+                tl2BiggerThen0 = (v2.x - v3.x) * (y - v2.y) - (v2.y - v3.y) * (x - v2.x) >= 0;
             } else {
-                tl2BiggerThen0 = (x2 - x3) * (y - y2) - (y2 - y3) * (x - x2) > 0;
+                tl2BiggerThen0 = (v2.x - v3.x) * (y - v2.y) - (v2.y - v3.y) * (x - v2.x) > 0;
             }
 
             bool tl3BiggerThen0 = false;
             if (tl3) {
-                tl3BiggerThen0 = (x3 - x1) * (y - y3) - (y3 - y1) * (x - x3) >= 0;
+                tl3BiggerThen0 = (v3.x - v1.x) * (y - v3.y) - (v3.y - v1.y) * (x - v3.x) >= 0;
             } else {
-                tl3BiggerThen0 = (x3 - x1) * (y - y3) - (y3 - y1) * (x - x3) > 0;
+                tl3BiggerThen0 = (v3.x - v1.x) * (y - v3.y) - (v3.y - v1.y) * (x - v3.x) > 0;
             }
 
+            //sprawdzenie czy piksele w trojkacie
             if (tl1BiggerThen0 && tl2BiggerThen0 && tl3BiggerThen0) {
-                Vector3 baricentricCoords = GetBaricentricTriangleCoords(x1, y1, x2, y2, x3, y3, x, y);
+                Vector3 baricentricCoords = GetBaricentricTriangleCoords(v1.x, v1.y, v2.x, v2.y, v3.x, v3.y, x, y);
 
                 std::shared_ptr<Color> finalColor = InterpolateColor(color1, color2, color3, baricentricCoords);
-                SetPixelColor(x, y, finalColor);
+
+                float depth = (baricentricCoords.x * v1.z + baricentricCoords.y * v2.z + baricentricCoords.z * v3.z);
+
+                if (depth > GetPixelDepth(x, y)) {
+                    SetPixelColor(x, y, finalColor);
+                    SetPixelDepth(x, y, depth);
+                }
             }
         }
     }

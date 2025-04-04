@@ -15,19 +15,20 @@ class PixelBuffer {
 public:
     int _width;
     int _height;
-    float _depth;
-    std::vector<std::shared_ptr<Color>> _pixels;
+    std::vector<std::shared_ptr<Color>> _pixelsColor;
+    std::vector<float> _pixelsDepth;
 
     PixelBuffer(int width, int height);
 
     void SetPixelColor(int x, int y, std::shared_ptr<Color> color);
-    Color GetPixel(int x, int y) const;
+    Color GetPixelColor(int x, int y) const;
 
-    void SetAllPixels(std::shared_ptr<Color> color);
+    void SetPixelDepth(int x, int y, float depth);
+    float GetPixelDepth(int x, int y);
 
-    void DrawTriangle(float canonX1, float canonY1, std::shared_ptr<Color> color1,
-                      float canonX2, float canonY2, std::shared_ptr<Color> color2,
-                      float canonX3, float canonY3, std::shared_ptr<Color> color3);
+    void SetAllPixelsColor(std::shared_ptr<Color> color);
+
+    void DrawTriangle(Vector3 canonV1, std::shared_ptr<Color> color1, Vector3 canonV2, std::shared_ptr<Color> color2, Vector3 canonV3, std::shared_ptr<Color> color3);
 
     Vector3 GetBaricentricTriangleCoords(int x1, int y1, int x2, int y2, int x3, int y3, int actualX, int actualY);
 
