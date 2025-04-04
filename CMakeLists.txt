@@ -9,4 +9,7 @@ add_executable(RepoMIAGK main.cpp
         Color.cpp
         Color.h
         TGAWriter.cpp
-        TGAWriter.h)
+        TGAWriter.h
+        Math/Vector3.cpp
+        Math/Vector3.h
+)

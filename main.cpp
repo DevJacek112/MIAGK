@@ -15,9 +15,9 @@ int main() {
 
     auto pixelBuffer = std::make_shared<PixelBuffer>(500, 500);
 
-    pixelBuffer->SetAllPixels(blue);
+    pixelBuffer->SetAllPixels(black);
 
-    pixelBuffer->DrawTriangle(-1.5f, 0.0f, 0.5f, 0.0f, 0.0f, -0.5f, green);
+    pixelBuffer->DrawTriangle(-1.5f, 0.9f, red, 1.0f, 0.0f, green, 0.3f, -0.8f, blue);
 
     TGAWriter::SaveToTGA("test.tga", pixelBuffer);
 

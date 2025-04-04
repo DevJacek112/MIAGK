@@ -24,7 +24,7 @@ void TGAWriter::SaveToTGA(const std::string& filename, std::shared_ptr<PixelBuff
 
     for (int y = pixelBuffer->_height - 1; y >= 0; --y) {
         for (int x = 0; x < pixelBuffer->_width; ++x) {
-            const Color& color = pixelBuffer->GetPixel(x, y);
+            const Color& color = pixelBuffer->GetPixel(x, pixelBuffer->_height - 1 - y);
             unsigned char pixel[3] = {
                 static_cast<unsigned char>(color._b),
                 static_cast<unsigned char>(color._g),
