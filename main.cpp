@@ -17,7 +17,9 @@ int main() {
 
     pixelBuffer->SetAllPixels(black);
 
-    pixelBuffer->DrawTriangle(-1.5f, 0.9f, red, 1.0f, 0.0f, green, 0.3f, -0.8f, blue);
+
+    pixelBuffer->DrawTriangle(0.9f, -0.9f, blue, -1.0f, -1.0f, blue, 1.0f, 1.0f, blue);
+    pixelBuffer->DrawTriangle(-0.9f, 0.9f, red, 1.0f, 1.0f, red, -1.0f, -1.0f, red);
 
     TGAWriter::SaveToTGA("test.tga", pixelBuffer);
 
