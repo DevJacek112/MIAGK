@@ -10,6 +10,12 @@ add_executable(RepoMIAGK main.cpp
         Color.h
         TGAWriter.cpp
         TGAWriter.h
-        Math/Vector3.cpp
-        Math/Vector3.h
+        Math/Float3.cpp
+        Math/Float3.h
+        Math/float4.cpp
+        Math/float4.h
+        Math/float4x4.cpp
+        Math/float4x4.h
+        Math/int3.cpp
+        Math/int3.h
 )

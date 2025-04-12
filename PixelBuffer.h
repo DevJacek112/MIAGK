@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "Color.h"
-#include "Math/Vector3.h"
+#include "Math/float3.h"
 
 class PixelBuffer {
 public:
@@ -28,12 +28,12 @@ public:
 
     void SetAllPixelsColor(std::shared_ptr<Color> color);
 
-    void DrawTriangle(Vector3 canonV1, std::shared_ptr<Color> color1, Vector3 canonV2, std::shared_ptr<Color> color2, Vector3 canonV3, std::shared_ptr<Color> color3);
+    void DrawTriangle(float3 canonV1, std::shared_ptr<Color> color1, float3 canonV2, std::shared_ptr<Color> color2, float3 canonV3, std::shared_ptr<Color> color3);
 
-    Vector3 GetBaricentricTriangleCoords(int x1, int y1, int x2, int y2, int x3, int y3, int actualX, int actualY);
+    float3 GetBaricentricTriangleCoords(int x1, int y1, int x2, int y2, int x3, int y3, int actualX, int actualY);
 
     std::shared_ptr<Color> InterpolateColor(std::shared_ptr<Color> c1, std::shared_ptr<Color> c2,
-                                            std::shared_ptr<Color> c3, Vector3 barycentricCoords);
+                                            std::shared_ptr<Color> c3, float3 barycentricCoords);
 };
 
 #endif // PIXELBUFFER_H

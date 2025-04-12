@@ -44,17 +44,17 @@ void PixelBuffer::SetAllPixelsColor(std::shared_ptr<Color> color) {
     }
 }
 
-void PixelBuffer::DrawTriangle(Vector3 canonV1, std::shared_ptr<Color> color1, Vector3 canonV2,
-                               std::shared_ptr<Color> color2, Vector3 canonV3, std::shared_ptr<Color> color3) {
-    Vector3 v1 = Vector3((canonV1.x + 1) * _width * 0.5f,
+void PixelBuffer::DrawTriangle(float3 canonV1, std::shared_ptr<Color> color1, float3 canonV2,
+                               std::shared_ptr<Color> color2, float3 canonV3, std::shared_ptr<Color> color3) {
+    float3 v1 = float3((canonV1.x + 1) * _width * 0.5f,
                          (canonV1.y + 1) * _height * 0.5f,
                          canonV1.z);
 
-    Vector3 v2 = Vector3((canonV2.x + 1) * _width * 0.5f,
+    float3 v2 = float3((canonV2.x + 1) * _width * 0.5f,
                          (canonV2.y + 1) * _height * 0.5f,
                          canonV2.z);
 
-    Vector3 v3 = Vector3((canonV3.x + 1) * _width * 0.5f,
+    float3 v3 = float3((canonV3.x + 1) * _width * 0.5f,
                          (canonV3.y + 1) * _height * 0.5f,
                          canonV3.z);
 
@@ -124,7 +124,7 @@ void PixelBuffer::DrawTriangle(Vector3 canonV1, std::shared_ptr<Color> color1, V
 
             //sprawdzenie czy piksele w trojkacie
             if (tl1BiggerThen0 && tl2BiggerThen0 && tl3BiggerThen0) {
-                Vector3 baricentricCoords = GetBaricentricTriangleCoords(v1.x, v1.y, v2.x, v2.y, v3.x, v3.y, x, y);
+                float3 baricentricCoords = GetBaricentricTriangleCoords(v1.x, v1.y, v2.x, v2.y, v3.x, v3.y, x, y);
 
                 std::shared_ptr<Color> finalColor = InterpolateColor(color1, color2, color3, baricentricCoords);
 
@@ -139,7 +139,7 @@ void PixelBuffer::DrawTriangle(Vector3 canonV1, std::shared_ptr<Color> color1, V
     }
 }
 
-Vector3 PixelBuffer::GetBaricentricTriangleCoords(int x1, int y1, int x2, int y2, int x3, int y3, int actualX,
+float3 PixelBuffer::GetBaricentricTriangleCoords(int x1, int y1, int x2, int y2, int x3, int y3, int actualX,
                                                   int actualY) {
     float denom = (y2 - y3) * (x1 - x3) + (x3 - x2) * (y1 - y3);
 
@@ -147,11 +147,11 @@ Vector3 PixelBuffer::GetBaricentricTriangleCoords(int x1, int y1, int x2, int y2
     float lambda2 = ((y3 - y1) * (actualX - x3) + (x1 - x3) * (actualY - y3)) / denom;
     float lambda3 = 1.0f - lambda1 - lambda2;
 
-    return Vector3(lambda1, lambda2, lambda3);
+    return float3(lambda1, lambda2, lambda3);
 }
 
 std::shared_ptr<Color> PixelBuffer::InterpolateColor(std::shared_ptr<Color> c1, std::shared_ptr<Color> c2,
-                                                     std::shared_ptr<Color> c3, Vector3 barycentricCoords) {
+                                                     std::shared_ptr<Color> c3, float3 barycentricCoords) {
     float r = barycentricCoords.x * c1->_r + barycentricCoords.y * c2->_r + barycentricCoords.z * c3->_r;
     float g = barycentricCoords.x * c1->_g + barycentricCoords.y * c2->_g + barycentricCoords.z * c3->_g;
     float b = barycentricCoords.x * c1->_b + barycentricCoords.y * c2->_b + barycentricCoords.z * c3->_b;
