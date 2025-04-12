@@ -13,10 +13,14 @@
 
 class Camera {
     public:
-    float4x4 _projectionMatrix;
+    float4x4 _view2Proj;
+    float4x4 _world2View;
+    float4x4 _obj2world;
     std::shared_ptr<PixelBuffer> _pixelBuffer;
 
     Camera();
+
+    void setLookat(float3 eye, float3 center, float3 up);
 
     void setPerspective(float fovy, float aspect, float near, float far);
 

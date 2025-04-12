@@ -25,6 +25,8 @@ class float4x4 {
 
     float4 operator*(const float4 &vec);
 
+    float4 operator*(const float4 &vec) const;
+
     float4x4 Transpose();
 };
 

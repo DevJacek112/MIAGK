@@ -64,6 +64,15 @@ float4 float4x4::operator*(const float4& vec) {
     );
 }
 
+float4 float4x4::operator*(const float4& vec) const {
+    return float4(
+        (*this)[0][0] * vec.x + (*this)[0][1] * vec.y + (*this)[0][2] * vec.z + (*this)[0][3] * vec.w,
+        (*this)[1][0] * vec.x + (*this)[1][1] * vec.y + (*this)[1][2] * vec.z + (*this)[1][3] * vec.w,
+        (*this)[2][0] * vec.x + (*this)[2][1] * vec.y + (*this)[2][2] * vec.z + (*this)[2][3] * vec.w,
+        (*this)[3][0] * vec.x + (*this)[3][1] * vec.y + (*this)[3][2] * vec.z + (*this)[3][3] * vec.w
+    );
+}
+
 
 float4x4 float4x4::Transpose() {
     float4x4 result;

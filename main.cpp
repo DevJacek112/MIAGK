@@ -23,8 +23,12 @@ int main() {
     float3 v3(1, -1, -5);
 
     Triangle triangle(v1,v2,v3, blue, blue, blue);
+    triangle.Scale(float3(1,2,1));
+    triangle.Rotate(20, float3(0, 1, 0));
+    triangle.Translate(float3(2, 0, 0));
 
     Camera camera;
+    camera.setLookat(float3(0,0,0), float3(0,0,-1), float3(0,1,0));
     camera.setPerspective(90.0f, 1.0f, 0.1f, 100.0f);
     camera.SetPixelBuffer(pixelBuffer);
     camera.RenderTriangle(triangle);
