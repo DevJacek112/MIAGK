@@ -18,4 +18,8 @@ add_executable(RepoMIAGK main.cpp
         Math/float4x4.h
         Math/int3.cpp
         Math/int3.h
+        Camera.cpp
+        Camera.h
+        Triangle.cpp
+        Triangle.h
 )

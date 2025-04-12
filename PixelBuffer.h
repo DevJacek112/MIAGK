@@ -18,6 +18,8 @@ public:
     std::vector<std::shared_ptr<Color>> _pixelsColor;
     std::vector<float> _pixelsDepth;
 
+    PixelBuffer() = default;
+
     PixelBuffer(int width, int height);
 
     void SetPixelColor(int x, int y, std::shared_ptr<Color> color);
