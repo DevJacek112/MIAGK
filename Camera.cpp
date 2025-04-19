@@ -41,9 +41,9 @@ void Camera::setPerspective(float fovy, float aspect, float near, float far) {
 
 void Camera::RenderTriangle(const Triangle &triangle) {
     //local -> world
-    float4 v1_world = triangle._obj2world * float4(triangle._v1.x, triangle._v1.y, triangle._v1.z, 1.0f);
-    float4 v2_world = triangle._obj2world * float4(triangle._v2.x, triangle._v2.y, triangle._v2.z, 1.0f);
-    float4 v3_world = triangle._obj2world * float4(triangle._v3.x, triangle._v3.y, triangle._v3.z, 1.0f);
+    float4 v1_world = triangle._obj2world * float4(triangle[0].x, triangle[0].y, triangle[0].z, -1.0f);
+    float4 v2_world = triangle._obj2world * float4(triangle[1].x, triangle[1].y, triangle[1].z, -1.0f);
+    float4 v3_world = triangle._obj2world * float4(triangle[2].x, triangle[2].y, triangle[2].z, -1.0f);
 
     //world -> view
     float4 v1_view = _world2View * v1_world;
@@ -65,4 +65,12 @@ void Camera::RenderTriangle(const Triangle &triangle) {
 
 void Camera::SetPixelBuffer(std::shared_ptr<PixelBuffer> pixelBuffer) {
     _pixelBuffer = pixelBuffer;
+}
+
+void Camera::RenderMeshes() {
+    for (auto mesh: _meshes) {
+        for (auto& triangle: mesh->_triangles){
+            RenderTriangle(triangle);
+        }
+    }
 }

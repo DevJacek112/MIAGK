@@ -9,6 +9,7 @@
 #include "PixelBuffer.h"
 #include "Triangle.h"
 #include "Math/float4x4.h"
+#include "Meshes/Mesh.h"
 
 
 class Camera {
@@ -17,6 +18,7 @@ class Camera {
     float4x4 _world2View;
     float4x4 _obj2world;
     std::shared_ptr<PixelBuffer> _pixelBuffer;
+    std::vector<std::shared_ptr<Mesh>> _meshes;
 
     Camera();
 
@@ -27,6 +29,8 @@ class Camera {
     void RenderTriangle(const Triangle& triangle);
 
     void SetPixelBuffer(std::shared_ptr<PixelBuffer> pixelBuffer);
+
+    void RenderMeshes();
 
 };
 

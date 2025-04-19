@@ -4,13 +4,19 @@
 
 #include "Triangle.h"
 
+float3 Triangle::operator[](int i) const {
+    return vertices[i];
+}
+
 Triangle::Triangle(const float3 &v1, const float3 &v2, const float3 &v3, const std::shared_ptr<Color> &v1_color,
-                   const std::shared_ptr<Color> &v2_color, const std::shared_ptr<Color> &v3_color): _v1(v1),
-    _v2(v2),
-    _v3(v3),
-    _v1Color(v1_color),
-    _v2Color(v2_color),
-    _v3Color(v3_color) {
+                   const std::shared_ptr<Color> &v2_color, const std::shared_ptr<Color> &v3_color): _v1Color(v1_color),
+                                                                                                    _v2Color(v2_color),
+                                                                                                    _v3Color(v3_color) {
+    vertices[0] = v1;
+    vertices[1] = v2;
+    vertices[2] = v3;
+
+
     _obj2world = float4x4(
         float4(1, 0, 0, 0),
         float4(0, 1, 0, 0),

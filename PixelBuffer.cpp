@@ -58,6 +58,12 @@ void PixelBuffer::DrawTriangle(float3 canonV1, std::shared_ptr<Color> color1, fl
                          (canonV3.y + 1) * _height * 0.5f,
                          canonV3.z);
 
+    float area = (v2.x - v1.x) * (v3.y - v1.y) - (v2.y - v1.y) * (v3.x - v1.x);
+    if (area > 0) {
+        std::swap(v2, v3);
+        std::swap(color2, color3);
+    }
+
     float minX = std::min(v1.x, v2.x);
     minX = std::min(minX, v3.x);
     minX = std::max(minX, 0.0f);

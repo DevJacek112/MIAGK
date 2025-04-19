@@ -13,7 +13,9 @@
 
 class Triangle {
 public:
-    float3 _v1, _v2, _v3;
+
+    float3 vertices[3];
+    float3 operator[](int i) const;
     std::shared_ptr<Color> _v1Color, _v2Color, _v3Color;
     float4x4 _obj2world;
 

@@ -22,4 +22,8 @@ add_executable(RepoMIAGK main.cpp
         Camera.h
         Triangle.cpp
         Triangle.h
+        Meshes/Mesh.cpp
+        Meshes/Mesh.h
+        Meshes/Cube.cpp
+        Meshes/Cube.h
 )
