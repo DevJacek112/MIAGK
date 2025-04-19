@@ -26,4 +26,10 @@ add_executable(RepoMIAGK main.cpp
         Meshes/Mesh.h
         Meshes/Cube.cpp
         Meshes/Cube.h
+        Meshes/Cone.cpp
+        Meshes/Cone.h
+        Meshes/Cylinder.cpp
+        Meshes/Cylinder.h
+        Meshes/Torus.cpp
+        Meshes/Torus.h
 )
