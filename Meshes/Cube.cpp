@@ -31,8 +31,8 @@ Cube::Cube(float size, float3 center) {
     v7 += center;
 
     // front face
-    /*_triangles.emplace_back(Triangle(v4, v6, v5, Color::Green(), Color::Green(), Color::Green()));
-    _triangles.emplace_back(Triangle(v4, v7, v6, Color::Green(), Color::Green(), Color::Green()));*/
+    _triangles.emplace_back(Triangle(v4, v6, v5, Color::Green(), Color::Green(), Color::Green()));
+    _triangles.emplace_back(Triangle(v4, v7, v6, Color::Green(), Color::Green(), Color::Green()));
 
     // left face
     _triangles.emplace_back(Triangle(v0, v4, v7, Color::Blue(), Color::Blue(), Color::Blue()));

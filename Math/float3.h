@@ -73,4 +73,16 @@ public:
     float3 saturate(const float3 &v);
 };
 
+inline float3 operator*(float scalar, const float3& vec) {
+    return float3(vec.x * scalar, vec.y * scalar, vec.z * scalar);
+}
+
+inline float3 operator*(const float3& vec, float scalar) {
+    return float3(vec.x * scalar, vec.y * scalar, vec.z * scalar);
+}
+
+inline float3 operator/(const float3& vec, float scalar) {
+    return float3(vec.x / scalar, vec.y / scalar, vec.z / scalar);
+}
+
 #endif //VECTOR3_H

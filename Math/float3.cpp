@@ -196,7 +196,7 @@ float float3::FindAngleDeg(float3 v) {
 float3 float3::Reflect(const float3& I, const float3& N) {
     float dotProduct = I.DotProduct(N);
     float scale = 2.0f * dotProduct;
-    return I - N * scale;
+    return I - scale * N;
 }
 
 float3 float3::saturate(const float3& v) {

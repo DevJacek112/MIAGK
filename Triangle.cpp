@@ -5,16 +5,16 @@
 #include "Triangle.h"
 
 float3 Triangle::operator[](int i) const {
-    return vertices[i];
+    return _vertices[i];
 }
 
 Triangle::Triangle(const float3 &v1, const float3 &v2, const float3 &v3, const std::shared_ptr<Color> &v1_color,
                    const std::shared_ptr<Color> &v2_color, const std::shared_ptr<Color> &v3_color): _v1Color(v1_color),
                                                                                                     _v2Color(v2_color),
                                                                                                     _v3Color(v3_color) {
-    vertices[0] = v1;
-    vertices[1] = v2;
-    vertices[2] = v3;
+    _vertices[0] = v1;
+    _vertices[1] = v2;
+    _vertices[2] = v3;
 
 
     _obj2world = float4x4(
@@ -23,6 +23,21 @@ Triangle::Triangle(const float3 &v1, const float3 &v2, const float3 &v3, const s
         float4(0, 0, 1, 0),
         float4(0, 0, 0, 1)
     );
+
+    float3 a1 = _vertices[1] - _vertices[0];
+    float3 b1 = _vertices[2] - _vertices[0];
+    normal1 = a1.Cross(b1);
+    normal1.Normalize();
+
+    float3 a2 = _vertices[0] - _vertices[1];
+    float3 b2 = _vertices[2] - _vertices[1];
+    normal2 = a2.Cross(b2);
+    normal2.Normalize();
+
+    float3 a3 = _vertices[1] - _vertices[2];
+    float3 b3 = _vertices[0] - _vertices[2];
+    normal3 = a3.Cross(b3);
+    normal3.Normalize();
 }
 
 void Triangle::Scale(float3 scale) {
