@@ -74,7 +74,21 @@ void Camera::RenderTriangle(Triangle &triangle, const Mesh& mesh) {
     float3 v1_ndc(v1_clip.x / v1_clip.w, v1_clip.y / v1_clip.w, v1_clip.z / v1_clip.w);
     float3 v2_ndc(v2_clip.x / v2_clip.w, v2_clip.y / v2_clip.w, v2_clip.z / v2_clip.w);
 
-    _pixelBuffer->DrawTriangle(v0_ndc, c0, v1_ndc, c1, v2_ndc, c2);
+    //_pixelBuffer->DrawTriangle(v0_ndc, c0, v1_ndc, c1, v2_ndc, c2);
+
+    float3 n0 = mesh._normals[i0];
+    float3 n1 = mesh._normals[i1];
+    float3 n2 = mesh._normals[i2];
+    _pixelBuffer->DrawTrianglePerPixelLight(
+        v0_ndc, c0,
+        v1_ndc, c1,
+        v2_ndc, c2,
+        _pointLights,
+        _directionalLight,
+        _world2View,
+        float3(v0_world.x, v0_world.y, v0_world.z),
+        float3(v1_world.x, v1_world.y, v1_world.z), float3(v2_world.x, v2_world.y, v2_world.z), n0, n1, n2
+    );
 }
 
 

@@ -31,7 +31,7 @@ int main() {
     cube->world2view = camera._world2View;
     cone->world2view = camera._world2View;
 
-    PointLight light(float3(-1.5, 1, -2));
+    PointLight light(float3(-1,5,-2));
 
     camera._pointLights.push_back(light);
 
