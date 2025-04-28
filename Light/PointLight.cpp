@@ -9,22 +9,22 @@
 PointLight::PointLight(const float3 &position)
     : position(position),
       ambient(0.7f, 0.7f, 0.7f),
-      diffuse(1.0f, 1.0f, 1.0f),
-      specular(1.0f, 1.0f, 1.0f)
+      diffuse(0.5f, 0.5f, 0.5f),
+      specular(0.5f, 0.5f, 0.5f)
 {
 }
 
 std::shared_ptr<Color> PointLight::calculatePhongLighting(
-    const float4x4 &world2view,
     const float3 &worldPos,
     const float3 &worldNormal,
     const std::shared_ptr<Color> baseColor,
     float shininess,
     float kd, float ks, float ka
-) {
+) const {
+
     float3 N = worldNormal.GetNormalized();
     float3 L = (position - worldPos).GetNormalized();
-    float3 V = (-worldPos).GetNormalized(); // zakładamy, że kamera jest w (0,0,0)
+    float3 V = (-worldPos).GetNormalized();
     float3 R = R.Reflect(-L, N);
 
     float dotProductNL = N.DotProduct(L);

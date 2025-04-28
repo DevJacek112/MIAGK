@@ -1,52 +1,49 @@
-//
-// Created by Jacek on 19.04.2025.
-//
-
 #include "Cylinder.h"
 
 Cylinder::Cylinder(float3 position, float size, int segments) {
-            if (segments < 3) segments = 3;
+    if (segments < 3) segments = 3;
 
-        float radius = size * 0.5f;
-        float height = size;
+    float radius = size * 0.5f;
+    float height = size;
 
-        float3 topCenter = float3(position.x, position.y + height * 0.5f, position.z);  // środek górnej podstawy
-        float3 bottomCenter = float3(position.x, position.y - height * 0.5f, position.z);  // środek dolnej podstawy
+    float3 topCenter = float3(position.x, position.y + height * 0.5f, position.z);
+    float3 bottomCenter = float3(position.x, position.y - height * 0.5f, position.z);
 
-        std::vector<float3> topBasePoints;
-        std::vector<float3> bottomBasePoints;
+    int baseIndex = 0;
 
-        for (int i = 0; i < segments; ++i) {
-            float angle = (2 * M_PI * i) / segments;
-            float x = position.x + cos(angle) * radius;
-            float z = position.z + sin(angle) * radius;
+    _vertices.push_back(topCenter);    // indeks 0
+    _vertices.push_back(bottomCenter); // indeks 1
 
-            float3 topPoint = float3(x, topCenter.y, z);
-            float3 bottomPoint = float3(x, bottomCenter.y, z);
+    for (int i = 0; i < segments; ++i) {
+        float angle = (2 * M_PI * i) / segments;
+        float x = position.x + cos(angle) * radius;
+        float z = position.z + sin(angle) * radius;
 
-            topBasePoints.push_back(topPoint);
-            bottomBasePoints.push_back(bottomPoint);
-        }
+        _vertices.push_back(float3(x, topCenter.y, z));    // top point
+        _vertices.push_back(float3(x, bottomCenter.y, z)); // bottom point
+    }
 
-        for (int i = 0; i < segments; ++i) {
-            float3 v1 = topBasePoints[i];
-            float3 v2 = topBasePoints[(i + 1) % segments];
-            float3 v3 = bottomBasePoints[(i + 1) % segments];
-            float3 v4 = bottomBasePoints[i];
+    for (int i = 0; i < segments; ++i) {
+        int top1 = 2 + i * 2;
+        int bottom1 = 2 + i * 2 + 1;
+        int top2 = 2 + ((i + 1) % segments) * 2;
+        int bottom2 = 2 + ((i + 1) % segments) * 2 + 1;
 
-            _triangles.emplace_back(v1, v2, v3, Color::Green(), Color::Green(), Color::Green());  // Pierwszy trójkąt
-            _triangles.emplace_back(v1, v3, v4, Color::Green(), Color::Green(), Color::Green());  // Drugi trójkąt
-        }
+        _triangles.push_back(Triangle(top1, top2, bottom2));
+        _triangles.push_back(Triangle(top1, bottom2, bottom1));
+    }
 
-        for (int i = 0; i < segments; ++i) {
-            float3 v1 = topBasePoints[i];
-            float3 v2 = topBasePoints[(i + 1) % segments];
-            _triangles.emplace_back(topCenter, v2, v1, Color::Blue(), Color::Blue(), Color::Blue());  // Trójkąt dla górnej podstawy
-        }
+    for (int i = 0; i < segments; ++i) {
+        int top = 2 + i * 2;
+        int nextTop = 2 + ((i + 1) % segments) * 2;
 
-        for (int i = 0; i < segments; ++i) {
-            float3 v1 = bottomBasePoints[i];
-            float3 v2 = bottomBasePoints[(i + 1) % segments];
-            _triangles.emplace_back(bottomCenter, v1, v2, Color::Red(), Color::Red(), Color::Red());  // Trójkąt dla dolnej podstawy
-        }
+        _triangles.push_back(Triangle(0, nextTop, top));
+    }
+
+    for (int i = 0; i < segments; ++i) {
+        int bottom = 2 + i * 2 + 1;
+        int nextBottom = 2 + ((i + 1) % segments) * 2 + 1;
+
+        _triangles.push_back(Triangle(1, bottom, nextBottom));
+    }
 }

@@ -21,9 +21,9 @@ public:
 
     PointLight(const float3 &position);
 
-    std::shared_ptr<Color> calculatePhongLighting(const float4x4 &world2view, const float3 &worldPos,
+    std::shared_ptr<Color> calculatePhongLighting(const float3 &worldPos,
                                                   const float3 &worldNormal, std::shared_ptr<Color> baseColor,
-                                                  float shininess, float kd, float ks, float ka);
+                                                  float shininess, float kd, float ks, float ka) const;
 };
 
 

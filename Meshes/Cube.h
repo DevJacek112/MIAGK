@@ -6,9 +6,8 @@
 #define CUBE_H
 #include "Mesh.h"
 
-
 class Cube : public Mesh {
-    public:
+public:
     Cube(float size, float3 center = float3(0, 0, 0));
 };
 

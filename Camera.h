@@ -22,7 +22,7 @@ class Camera {
     std::shared_ptr<PixelBuffer> _pixelBuffer;
     std::vector<std::shared_ptr<Mesh>> _meshes;
     std::vector<PointLight> _pointLights;
-    DirectionalLight _directionalLight = DirectionalLight(float3(1,0,0));;
+    DirectionalLight _directionalLight = DirectionalLight(float3(0,0,1), 0.1);;
 
     Camera();
 
@@ -30,7 +30,7 @@ class Camera {
 
     void setPerspective(float fovy, float aspect, float near, float far);
 
-    void RenderTriangle(Triangle& triangle);
+    void RenderTriangle(Triangle &triangle, const Mesh &mesh);
 
     void SetPixelBuffer(std::shared_ptr<PixelBuffer> pixelBuffer);
 

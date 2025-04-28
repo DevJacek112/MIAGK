@@ -32,7 +32,7 @@ Torus::Torus(float3 position, float R, float r, int majorSegments, int minorSegm
             float y4 = (R + r * cos(angleMinor1)) * sin(angleMajor2);
             float z4 = r * sin(angleMinor1);
 
-            _triangles.emplace_back(float3(x1, y1, z1) + position,
+            /*_triangles.emplace_back(float3(x1, y1, z1) + position,
                                    float3(x2, y2, z2) + position,
                                    float3(x4, y4, z4) + position,
                                    Color::Red(), Color::Red(), Color::Red());
@@ -40,7 +40,7 @@ Torus::Torus(float3 position, float R, float r, int majorSegments, int minorSegm
             _triangles.emplace_back(float3(x2, y2, z2) + position,
                                    float3(x3, y3, z3) + position,
                                    float3(x4, y4, z4) + position,
-                                   Color::Blue(), Color::Blue(), Color::Blue());
+                                   Color::Blue(), Color::Blue(), Color::Blue());*/
         }
     }
 }

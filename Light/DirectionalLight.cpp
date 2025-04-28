@@ -5,10 +5,10 @@
 #include "DirectionalLight.h"
 #include <algorithm>
 
-DirectionalLight::DirectionalLight(const float3 &direction)
+DirectionalLight::DirectionalLight(const float3 &direction, float intensity)
     : direction(direction.GetNormalized()),
-      ambient(0.9f, 0.9f, 0.9f),
-      diffuse(0.6f, 0.6f, 0.6f),
+      ambient(intensity, intensity, intensity),
+      diffuse(0.1f, 0.1f, 0.1f),
       specular(.0f, .0f, .0f)
 {
 }

@@ -1,35 +1,19 @@
-//
-// Created by Jacek on 12.04.2025.
-//
-
 #ifndef TRIANGLE_H
 #define TRIANGLE_H
-#include <memory>
-
-#include "Color.h"
-#include "Math/Float3.h"
-#include "Math/float4x4.h"
-
 
 class Triangle {
 public:
+    int _indices[3];
 
-    float3 _vertices[3];
-    float3 operator[](int i) const;
-    std::shared_ptr<Color> _v1Color, _v2Color, _v3Color;
-    float4x4 _obj2world;
-    float3 normal1, normal2, normal3;
+    Triangle(int i0, int i1, int i2) {
+        _indices[0] = i0;
+        _indices[1] = i1;
+        _indices[2] = i2;
+    }
 
-    Triangle(const float3 &v1, const float3 &v2, const float3 &v3, const std::shared_ptr<Color> &v1_color,
-        const std::shared_ptr<Color> &v2_color, const std::shared_ptr<Color> &v3_color);
-
-    void Scale(float3 scale);
-
-    void Rotate(float angle, float3 axis);
-
-    void Translate(float3 translate);
+    int operator[](int i) const {
+        return _indices[i];
+    }
 };
 
-
-
-#endif //TRIANGLE_H
+#endif // TRIANGLE_H

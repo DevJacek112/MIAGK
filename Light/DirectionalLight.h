@@ -16,7 +16,7 @@ public:
     float3 diffuse;
     float3 specular;
 
-    DirectionalLight(const float3 &direction);
+    DirectionalLight(const float3 &direction, float intensity);
 
     std::shared_ptr<Color> calculatePhongLighting(const float4x4 &world2view, const float3 &worldPos,
                                                   const float3 &worldNormal, std::shared_ptr<Color> baseColor,
