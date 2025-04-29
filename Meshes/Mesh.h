@@ -24,6 +24,8 @@ public:
 
     float _size;
     float3 _centerPosition;
+    int textureNumber;
+    bool wannaLight = true;
 
     void GenerateNormals();
     void GenerateVertexColors(const std::vector<PointLight> &pointLights, DirectionalLight &directionalLight);

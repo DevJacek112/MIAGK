@@ -22,7 +22,7 @@ class Camera {
     std::shared_ptr<PixelBuffer> _pixelBuffer;
     std::vector<std::shared_ptr<Mesh>> _meshes;
     std::vector<PointLight> _pointLights;
-    DirectionalLight _directionalLight = DirectionalLight(float3(0,0,1), 0.1);;
+    DirectionalLight _directionalLight = DirectionalLight(float3(0,0,1), 0.4);;
 
     Camera();
 

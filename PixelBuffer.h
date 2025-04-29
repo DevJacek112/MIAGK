@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "Color.h"
+#include "Texture.h"
 #include "Light/DirectionalLight.h"
 #include "Light/PointLight.h"
 #include "Math/float3.h"
@@ -23,6 +24,11 @@ public:
     int _height;
     std::vector<std::shared_ptr<Color>> _pixelsColor;
     std::vector<float> _pixelsDepth;
+
+    std::shared_ptr<Texture> tex1;
+    bool isFirstTextureUsed = false;
+    std::shared_ptr<Texture> tex2;
+
 
     PixelBuffer() = default;
 
@@ -51,7 +57,8 @@ public:
                                    float3 canonV3, std::shared_ptr<Color> color3, const std::vector<PointLight> &pointLights,
                                    DirectionalLight directional, float4x4 world2view, const float3 &worldPos1,
                                    const float3 &worldPos2,
-                                   const float3 &worldPos3, const float3 &normal1, const float3 &normal2, const float3 &normal3);
+                                   const float3 &worldPos3, const float3 &normal1, const float3 &normal2, const float3 &normal3, int textureNumber, bool
+                                   wannaLight);
 };
 
 #endif // PIXELBUFFER_H

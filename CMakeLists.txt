@@ -38,4 +38,6 @@ add_executable(RepoMIAGK main.cpp
         VertexProcessor.h
         Light/DirectionalLight.cpp
         Light/DirectionalLight.h
+        Texture.cpp
+        Texture.h
 )

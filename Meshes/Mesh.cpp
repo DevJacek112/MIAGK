@@ -25,7 +25,7 @@ void Mesh::GenerateVertexColors(const std::vector<PointLight> &pointLights, Dire
     float ks = 0.5f;
     float ka = 0.2f;
     float shininess = 16.0f;
-    auto baseColor = std::make_shared<Color>(255, 0, 0, 255);
+    auto baseColor = std::make_shared<Color>(255, 255, 255, 255);
 
     for (int i = 0; i < _vertices.size(); ++i) {
         auto finalColor = std::make_shared<Color>(0, 0, 0, 0);

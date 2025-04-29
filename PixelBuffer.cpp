@@ -9,6 +9,12 @@
 #include "Light/DirectionalLight.h"
 #include "Light/PointLight.h"
 
+struct TexCoord {
+    float u;
+    float v;
+};
+
+
 PixelBuffer::PixelBuffer(int width, int height)
     : _width(width),
       _height(height),
@@ -174,7 +180,7 @@ void PixelBuffer::DrawTrianglePerPixelLight(
     DirectionalLight directional,
     float4x4 world2view,
     const float3& worldPos1, const float3& worldPos2, const float3& worldPos3,
-    const float3& normal1, const float3& normal2, const float3& normal3
+    const float3& normal1, const float3& normal2, const float3& normal3, int textureNumber, bool wannaLight
 ) {
     float3 v1 = float3((canonV1.x + 1) * _width * 0.5f, (canonV1.y + 1) * _height * 0.5f, canonV1.z);
     float3 v2 = float3((canonV2.x + 1) * _width * 0.5f, (canonV2.y + 1) * _height * 0.5f, canonV2.z);
@@ -216,37 +222,74 @@ void PixelBuffer::DrawTrianglePerPixelLight(
                 float3 interpWorldPos = bary.x * worldPos1 + bary.y * worldPos2 + bary.z * worldPos3;
                 float3 interpNormal = (bary.x * normal1 + bary.y * normal2 + bary.z * normal3).GetNormalized();
 
-                std::shared_ptr<Color> interpColor = InterpolateColor(color1, color2, color3, bary);
+                Color interpolatedVertexColor = bary.x * (*color1) + bary.y * (*color2) + bary.z * (*color3);
 
-                std::shared_ptr<Color> finalColor = std::make_shared<Color>(0, 0, 0, 255);
+                float u1 = 0.0f, v1_uv = 0.0f;
+                float u2 = 1.0f, v2_uv = 0.0f;
+                float u3 = 0.0f, v3_uv = 1.0f;
 
-                for (const auto& light : pointLights) {
-                    auto lightContribution = light.calculatePhongLighting(interpWorldPos, interpNormal, interpColor,
-                                                                          32.0f, 1.0f, 1.0f, 1.0f);
+                float u = bary.x * u1 + bary.y * u2 + bary.z * u3;
+                float v = bary.x * v1_uv + bary.y * v2_uv + bary.z * v3_uv;
 
-                    finalColor->_r = std::min(255, finalColor->_r + lightContribution->_r);
-                    finalColor->_g = std::min(255, finalColor->_g + lightContribution->_g);
-                    finalColor->_b = std::min(255, finalColor->_b + lightContribution->_b);
+                int texX;
+                int texY;
+                Color textureColor;
+                if (textureNumber == 1) {
+                    texX = std::clamp(int(u * tex1->width), 0, tex1->width - 1);
+                    texY = std::clamp(int(v * tex1->height), 0, tex1->height - 1);
+                    textureColor = tex1->data[texY * tex1->width + texX];
+                }
+                if (textureNumber == 2) {
+                    texX = std::clamp(int(u * tex2->width), 0, tex2->width - 1);
+                    texY = std::clamp(int(v * tex2->height), 0, tex2->height - 1);
+                    textureColor = tex2->data[texY * tex2->width + texX];
                 }
 
-                auto color2 = directional.calculatePhongLighting(
-                    world2view,
-                    interpWorldPos,
-                    interpNormal,
-                    interpColor,
-                    32.0f, 1.0f, 1.0f, 1.0f
+
+
+                Color baseColor(
+                    (interpolatedVertexColor._r * textureColor._r) / 255,
+                    (interpolatedVertexColor._g * textureColor._g) / 255,
+                    (interpolatedVertexColor._b * textureColor._b) / 255,
+                    255
                 );
 
-                finalColor->_r = std::min(255, finalColor->_r + color2->_r);
-                finalColor->_g = std::min(255, finalColor->_g + color2->_g);
-                finalColor->_b = std::min(255, finalColor->_b + color2->_b);
+                int r = 0, g = 0, b = 0;
+                auto baseColorPtr = std::make_shared<Color>(baseColor);
+                if (wannaLight) {
+                    for (const auto& light : pointLights) {
+                        auto lightContribution = light.calculatePhongLighting(
+                            interpWorldPos, interpNormal, baseColorPtr, 32.0f, 1.0f, 1.0f, 1.0f
+                        );
+                        r += lightContribution->_r;
+                        g += lightContribution->_g;
+                        b += lightContribution->_b;
+                    }
+
+                    auto dirLight = directional.calculatePhongLighting(
+                        world2view, interpWorldPos, interpNormal, baseColorPtr, 32.0f, 1.0f, 1.0f, 1.0f
+                    );
+                    r += dirLight->_r;
+                    g += dirLight->_g;
+                    b += dirLight->_b;
+
+                    r = std::min(255, r);
+                    g = std::min(255, g);
+                    b = std::min(255, b);
+                }
 
                 float depth = bary.x * v1.z + bary.y * v2.z + bary.z * v3.z;
 
                 if (depth > GetPixelDepth(x, y)) {
-                    SetPixelColor(x, y, finalColor);
+                    if (wannaLight) {
+                        SetPixelColor(x, y, std::make_shared<Color>(r, g, b, 255));
+                    }
+                    else {
+                        SetPixelColor(x, y, std::make_shared<Color>(baseColor._r, baseColor._g, baseColor._b, 255));
+                    }
                     SetPixelDepth(x, y, depth);
                 }
+
             }
         }
     }

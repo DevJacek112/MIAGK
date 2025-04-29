@@ -87,7 +87,7 @@ void Camera::RenderTriangle(Triangle &triangle, const Mesh& mesh) {
         _directionalLight,
         _world2View,
         float3(v0_world.x, v0_world.y, v0_world.z),
-        float3(v1_world.x, v1_world.y, v1_world.z), float3(v2_world.x, v2_world.y, v2_world.z), n0, n1, n2
+        float3(v1_world.x, v1_world.y, v1_world.z), float3(v2_world.x, v2_world.y, v2_world.z), n0, n1, n2, mesh.textureNumber, mesh.wannaLight
     );
 }
 

@@ -4,6 +4,7 @@
 #include "Camera.h"
 #include "Color.h"
 #include "PixelBuffer.h"
+#include "Texture.h"
 #include "TGAWriter.h"
 #include "Math/float4x4.h"
 #include "Meshes/Cone.h"
@@ -27,11 +28,22 @@ int main() {
     std::shared_ptr<Cube> cube = std::make_shared<Cube>(0.5, float3(0,0,-1));
     std::shared_ptr<Cone> cone = std::make_shared<Cone>(float3(1.1,-1,-1), 0.5, 8);
 
+    Texture tex1, tex2;
+    tex1.LoadFromTGA("../tex.tga");
+    tex2.LoadFromTGA("../tex2.tga");
+    pixelBuffer->tex1 = std::make_shared<Texture>(tex1);
+    pixelBuffer->tex2 = std::make_shared<Texture>(tex2);
+
     cone1->world2view = camera._world2View;
     cube->world2view = camera._world2View;
     cone->world2view = camera._world2View;
+    cone1->wannaLight = false;
 
-    PointLight light(float3(-1,5,-2));
+    cone1->textureNumber = 1;
+    cube->textureNumber = 1;
+    cone->textureNumber = 2;
+
+    PointLight light(float3(3,5,-2));
 
     camera._pointLights.push_back(light);
 
