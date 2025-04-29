@@ -21,12 +21,12 @@ int main() {
     Camera camera;
 
 
-    camera.setLookat(float3(0,0,1), float3(0,0,0), float3(0,1,0));
+    camera.setLookat(float3(0,0,-1), float3(0,0,0), float3(0,1,0));
     camera.setPerspective(110.0f, 1.0f, 0.1f, 100.0f);
     camera.SetPixelBuffer(pixelBuffer);
     std::shared_ptr<Cylinder> cone1 = std::make_shared<Cylinder>(float3(-1.1,1,-1), 0.5, 8);
     std::shared_ptr<Cube> cube = std::make_shared<Cube>(0.5, float3(0,0,-1));
-    std::shared_ptr<Cone> cone = std::make_shared<Cone>(float3(1.1,-1,-1), 0.5, 8);
+    std::shared_ptr<Cone> cone = std::make_shared<Cone>(float3(1.1,1,-1), 0.5, 8);
 
     Texture tex1, tex2;
     tex1.LoadFromTGA("../tex.tga");
