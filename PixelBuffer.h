@@ -14,8 +14,6 @@
 
 #include "Color.h"
 #include "Texture.h"
-#include "Light/DirectionalLight.h"
-#include "Light/PointLight.h"
 #include "Math/float3.h"
 
 class PixelBuffer {
@@ -42,23 +40,15 @@ public:
 
     void SetAllPixelsColor(std::shared_ptr<Color> color);
 
-    void DrawTrianglePerVertexLight(float3 canonV1, std::shared_ptr<Color> color1, float3 canonV2, std::shared_ptr<Color> color2, float3 canonV3, std::shared_ptr<Color> color3);
+    void DrawTriangle(float3 canonV1, std::shared_ptr<Color> color1, float3 canonV2, std::shared_ptr<Color> color2, float3 canonV3, std::
+                                    shared_ptr<Color> color3, float3 uv1, float3 uv2, float3 uv3, int textureNumber);
 
     float3 GetBaricentricTriangleCoords(int x1, int y1, int x2, int y2, int x3, int y3, int actualX, int actualY);
 
     std::shared_ptr<Color> InterpolateColor(std::shared_ptr<Color> c1, std::shared_ptr<Color> c2,
                                             std::shared_ptr<Color> c3, float3 barycentricCoords);
 
-    float3 InterpolateNormal(float3 n1, float3 n2, float3 n3, float3 barycentricCoords);
-
-    Color CalculateLighting(const float3 &position, const float3 &normal, const std::vector<PointLight> &lights);
-
-    void DrawTrianglePerPixelLight(float3 canonV1, std::shared_ptr<Color> color1, float3 canonV2, std::shared_ptr<Color> color2,
-                                   float3 canonV3, std::shared_ptr<Color> color3, const std::vector<PointLight> &pointLights,
-                                   DirectionalLight directional, float4x4 world2view, const float3 &worldPos1,
-                                   const float3 &worldPos2,
-                                   const float3 &worldPos3, const float3 &normal1, const float3 &normal2, const float3 &normal3, int textureNumber, bool
-                                   wannaLight);
+    Color SampleTexture(int textureNumber, float u, float v);
 };
 
 #endif // PIXELBUFFER_H

@@ -8,8 +8,6 @@
 
 #include "PixelBuffer.h"
 #include "Triangle.h"
-#include "Light/DirectionalLight.h"
-#include "Light/PointLight.h"
 #include "Math/float4x4.h"
 #include "Meshes/Mesh.h"
 
@@ -21,8 +19,6 @@ class Camera {
     float4x4 _obj2world;
     std::shared_ptr<PixelBuffer> _pixelBuffer;
     std::vector<std::shared_ptr<Mesh>> _meshes;
-    std::vector<PointLight> _pointLights;
-    DirectionalLight _directionalLight = DirectionalLight(float3(0,0,1), 0.4);;
 
     Camera();
 

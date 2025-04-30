@@ -4,8 +4,6 @@
 
 #include "Camera.h"
 
-#include "VertexProcessor.h"
-
 
 Camera::Camera() {
     setPerspective(90.0f, 1.0f, 0.1f, 100.0f);
@@ -42,6 +40,7 @@ void Camera::setPerspective(float fovy, float aspect, float near, float far) {
 }
 
 void Camera::RenderTriangle(Triangle &triangle, const Mesh& mesh) {
+
     int i0 = triangle[0];
     int i1 = triangle[1];
     int i2 = triangle[2];
@@ -74,24 +73,13 @@ void Camera::RenderTriangle(Triangle &triangle, const Mesh& mesh) {
     float3 v1_ndc(v1_clip.x / v1_clip.w, v1_clip.y / v1_clip.w, v1_clip.z / v1_clip.w);
     float3 v2_ndc(v2_clip.x / v2_clip.w, v2_clip.y / v2_clip.w, v2_clip.z / v2_clip.w);
 
-    //_pixelBuffer->DrawTriangle(v0_ndc, c0, v1_ndc, c1, v2_ndc, c2);
-
-    float3 n0 = mesh._normals[i0];
-    float3 n1 = mesh._normals[i1];
-    float3 n2 = mesh._normals[i2];
-    _pixelBuffer->DrawTrianglePerPixelLight(
+    _pixelBuffer->DrawTriangle(
         v0_ndc, c0,
         v1_ndc, c1,
         v2_ndc, c2,
-        _pointLights,
-        _directionalLight,
-        _world2View,
-        float3(v0_world.x, v0_world.y, v0_world.z),
-        float3(v1_world.x, v1_world.y, v1_world.z), float3(v2_world.x, v2_world.y, v2_world.z), n0, n1, n2, mesh.textureNumber, mesh.wannaLight
-    );
+        float3(0,0,0), float3(1,0,0), float3(0,1,0),
+        mesh.textureNumber);
 }
-
-
 
 void Camera::SetPixelBuffer(std::shared_ptr<PixelBuffer> pixelBuffer) {
     _pixelBuffer = pixelBuffer;

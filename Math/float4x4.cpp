@@ -6,6 +6,8 @@
 
 #include <stdexcept>
 
+#include "float3.h"
+
 float4x4::float4x4(float4 a, float4 b, float4 c, float4 d): columns{} {
     columns[0] = a;
     columns[1] = b;
@@ -99,3 +101,4 @@ float4x4 float4x4::Transpose() {
 
     return result;
 }
+

@@ -6,14 +6,11 @@
 #include <limits>
 
 #include "pixelbuffer.h"
-#include "Light/DirectionalLight.h"
-#include "Light/PointLight.h"
 
 struct TexCoord {
     float u;
     float v;
 };
-
 
 PixelBuffer::PixelBuffer(int width, int height)
     : _width(width),
@@ -52,8 +49,48 @@ void PixelBuffer::SetAllPixelsColor(std::shared_ptr<Color> color) {
     }
 }
 
-void PixelBuffer::DrawTrianglePerVertexLight(float3 canonV1, std::shared_ptr<Color> color1, float3 canonV2,
-                               std::shared_ptr<Color> color2, float3 canonV3, std::shared_ptr<Color> color3) {
+float3 PixelBuffer::GetBaricentricTriangleCoords(int x1, int y1, int x2, int y2, int x3, int y3, int actualX,
+                                                  int actualY) {
+    float denom = (y2 - y3) * (x1 - x3) + (x3 - x2) * (y1 - y3);
+
+    float lambda1 = ((y2 - y3) * (actualX - x3) + (x3 - x2) * (actualY - y3)) / denom;
+    float lambda2 = ((y3 - y1) * (actualX - x3) + (x1 - x3) * (actualY - y3)) / denom;
+    float lambda3 = 1.0f - lambda1 - lambda2;
+
+    return float3(lambda1, lambda2, lambda3);
+}
+
+std::shared_ptr<Color> PixelBuffer::InterpolateColor(std::shared_ptr<Color> c1, std::shared_ptr<Color> c2,
+                                                     std::shared_ptr<Color> c3, float3 barycentricCoords) {
+    float r = barycentricCoords.x * c1->_r + barycentricCoords.y * c2->_r + barycentricCoords.z * c3->_r;
+    float g = barycentricCoords.x * c1->_g + barycentricCoords.y * c2->_g + barycentricCoords.z * c3->_g;
+    float b = barycentricCoords.x * c1->_b + barycentricCoords.y * c2->_b + barycentricCoords.z * c3->_b;
+
+    return std::make_shared<Color>(r, g, b, 0);
+}
+
+Color PixelBuffer::SampleTexture(int textureNumber, float u, float v) {
+    int texX, texY;
+    if (textureNumber == 1) {
+        texX = std::clamp(int(u * tex1->width), 0, tex1->width - 1);
+        texY = std::clamp(int(v * tex1->height), 0, tex1->height - 1);
+        return tex1->data[texY * tex1->width + texX];
+    }
+    if (textureNumber == 2) {
+        texX = std::clamp(int(u * tex2->width), 0, tex2->width - 1);
+        texY = std::clamp(int(v * tex2->height), 0, tex2->height - 1);
+        return tex2->data[texY * tex2->width + texX];
+    }
+    return Color(255, 255, 255, 255);
+}
+
+void PixelBuffer::DrawTriangle(
+    float3 canonV1, std::shared_ptr<Color> color1,
+    float3 canonV2, std::shared_ptr<Color> color2,
+    float3 canonV3, std::shared_ptr<Color> color3,
+    float3 uv1, float3 uv2, float3 uv3,
+    int textureNumber
+) {
     float3 v1 = float3((canonV1.x + 1) * _width * 0.5f,
                          (canonV1.y + 1) * _height * 0.5f,
                          canonV1.z);
@@ -140,156 +177,25 @@ void PixelBuffer::DrawTrianglePerVertexLight(float3 canonV1, std::shared_ptr<Col
             if (tl1BiggerThen0 && tl2BiggerThen0 && tl3BiggerThen0) {
                 float3 baricentricCoords = GetBaricentricTriangleCoords(v1.x, v1.y, v2.x, v2.y, v3.x, v3.y, x, y);
 
-                std::shared_ptr<Color> finalColor = InterpolateColor(color1, color2, color3, baricentricCoords);
+                std::shared_ptr<Color> vertexColor = InterpolateColor(color1, color2, color3, baricentricCoords);
 
-                float depth = (baricentricCoords.x * v1.z + baricentricCoords.y * v2.z + baricentricCoords.z * v3.z);
+                // interpolacja UV
+                float u = baricentricCoords.x * uv1.x + baricentricCoords.y * uv2.x + baricentricCoords.z * uv3.x;
+                float v = baricentricCoords.x * uv1.y + baricentricCoords.y * uv2.y + baricentricCoords.z * uv3.y;
 
-                if (depth > GetPixelDepth(x, y)) {
-                    SetPixelColor(x, y, finalColor);
-                    SetPixelDepth(x, y, depth);
-                }
-            }
-        }
-    }
-}
+                Color texColor = SampleTexture(textureNumber, u, v);
 
-float3 PixelBuffer::GetBaricentricTriangleCoords(int x1, int y1, int x2, int y2, int x3, int y3, int actualX,
-                                                  int actualY) {
-    float denom = (y2 - y3) * (x1 - x3) + (x3 - x2) * (y1 - y3);
+                // moduluje kolor teksturą
+                int r = (vertexColor->_r * texColor._r /255);
+                int g = (vertexColor->_g * texColor._g /255);
+                int b = (vertexColor->_b * texColor._b /255);
 
-    float lambda1 = ((y2 - y3) * (actualX - x3) + (x3 - x2) * (actualY - y3)) / denom;
-    float lambda2 = ((y3 - y1) * (actualX - x3) + (x1 - x3) * (actualY - y3)) / denom;
-    float lambda3 = 1.0f - lambda1 - lambda2;
-
-    return float3(lambda1, lambda2, lambda3);
-}
-
-std::shared_ptr<Color> PixelBuffer::InterpolateColor(std::shared_ptr<Color> c1, std::shared_ptr<Color> c2,
-                                                     std::shared_ptr<Color> c3, float3 barycentricCoords) {
-    float r = barycentricCoords.x * c1->_r + barycentricCoords.y * c2->_r + barycentricCoords.z * c3->_r;
-    float g = barycentricCoords.x * c1->_g + barycentricCoords.y * c2->_g + barycentricCoords.z * c3->_g;
-    float b = barycentricCoords.x * c1->_b + barycentricCoords.y * c2->_b + barycentricCoords.z * c3->_b;
-
-    return std::make_shared<Color>(r, g, b, 0);
-}
-
-void PixelBuffer::DrawTrianglePerPixelLight(
-    float3 canonV1, std::shared_ptr<Color> color1, float3 canonV2, std::shared_ptr<Color> color2,
-    float3 canonV3, std::shared_ptr<Color> color3,
-    const std::vector<PointLight>& pointLights,
-    DirectionalLight directional,
-    float4x4 world2view,
-    const float3& worldPos1, const float3& worldPos2, const float3& worldPos3,
-    const float3& normal1, const float3& normal2, const float3& normal3, int textureNumber, bool wannaLight
-) {
-    float3 v1 = float3((canonV1.x + 1) * _width * 0.5f, (canonV1.y + 1) * _height * 0.5f, canonV1.z);
-    float3 v2 = float3((canonV2.x + 1) * _width * 0.5f, (canonV2.y + 1) * _height * 0.5f, canonV2.z);
-    float3 v3 = float3((canonV3.x + 1) * _width * 0.5f, (canonV3.y + 1) * _height * 0.5f, canonV3.z);
-
-    float area = (v2.x - v1.x) * (v3.y - v1.y) - (v2.y - v1.y) * (v3.x - v1.x);
-    if (area > 0) {
-        std::swap(v2, v3);
-        std::swap(color2, color3);
-    }
-
-    float minX = std::max(std::min({v1.x, v2.x, v3.x}), 0.0f);
-    float maxX = std::min(std::max({v1.x, v2.x, v3.x}), (float)(_width - 1));
-    float minY = std::max(std::min({v1.y, v2.y, v3.y}), 0.0f);
-    float maxY = std::min(std::max({v1.y, v2.y, v3.y}), (float)(_height - 1));
-
-    int dy12 = v1.y - v2.y;
-    int dy23 = v2.y - v3.y;
-    int dy31 = v3.y - v1.y;
-    int dx12 = v1.x - v2.x;
-    int dx23 = v2.x - v3.x;
-    int dx31 = v3.x - v1.x;
-
-    bool tl1 = dy12 < 0 || (dy12 == 0 && dx12 > 0);
-    bool tl2 = dy23 < 0 || (dy23 == 0 && dx23 > 0);
-    bool tl3 = dy31 < 0 || (dy31 == 0 && dx31 > 0);
-
-    for (int y = minY; y <= maxY; ++y) {
-        for (int x = minX; x <= maxX; ++x) {
-            bool inside = true;
-
-            inside &= ((v1.x - v2.x) * (y - v1.y) - (v1.y - v2.y) * (x - v1.x)) > (tl1 ? -1 : 0);
-            inside &= ((v2.x - v3.x) * (y - v2.y) - (v2.y - v3.y) * (x - v2.x)) > (tl2 ? -1 : 0);
-            inside &= ((v3.x - v1.x) * (y - v3.y) - (v3.y - v1.y) * (x - v3.x)) > (tl3 ? -1 : 0);
-
-            if (inside) {
-                float3 bary = GetBaricentricTriangleCoords(v1.x, v1.y, v2.x, v2.y, v3.x, v3.y, x, y);
-
-                float3 interpWorldPos = bary.x * worldPos1 + bary.y * worldPos2 + bary.z * worldPos3;
-                float3 interpNormal = (bary.x * normal1 + bary.y * normal2 + bary.z * normal3).GetNormalized();
-
-                Color interpolatedVertexColor = bary.x * (*color1) + bary.y * (*color2) + bary.z * (*color3);
-
-                float u1 = 0.0f, v1_uv = 0.0f;
-                float u2 = 1.0f, v2_uv = 0.0f;
-                float u3 = 0.0f, v3_uv = 1.0f;
-
-                float u = bary.x * u1 + bary.y * u2 + bary.z * u3;
-                float v = bary.x * v1_uv + bary.y * v2_uv + bary.z * v3_uv;
-
-                int texX;
-                int texY;
-                Color textureColor;
-                if (textureNumber == 1) {
-                    texX = std::clamp(int(u * tex1->width), 0, tex1->width - 1);
-                    texY = std::clamp(int(v * tex1->height), 0, tex1->height - 1);
-                    textureColor = tex1->data[texY * tex1->width + texX];
-                }
-                if (textureNumber == 2) {
-                    texX = std::clamp(int(u * tex2->width), 0, tex2->width - 1);
-                    texY = std::clamp(int(v * tex2->height), 0, tex2->height - 1);
-                    textureColor = tex2->data[texY * tex2->width + texX];
-                }
-
-
-
-                Color baseColor(
-                    (interpolatedVertexColor._r * textureColor._r) / 255,
-                    (interpolatedVertexColor._g * textureColor._g) / 255,
-                    (interpolatedVertexColor._b * textureColor._b) / 255,
-                    255
-                );
-
-                int r = 0, g = 0, b = 0;
-                auto baseColorPtr = std::make_shared<Color>(baseColor);
-                if (wannaLight) {
-                    for (const auto& light : pointLights) {
-                        auto lightContribution = light.calculatePhongLighting(
-                            interpWorldPos, interpNormal, baseColorPtr, 32.0f, 1.0f, 1.0f, 1.0f
-                        );
-                        r += lightContribution->_r;
-                        g += lightContribution->_g;
-                        b += lightContribution->_b;
-                    }
-
-                    auto dirLight = directional.calculatePhongLighting(
-                        world2view, interpWorldPos, interpNormal, baseColorPtr, 32.0f, 1.0f, 1.0f, 1.0f
-                    );
-                    r += dirLight->_r;
-                    g += dirLight->_g;
-                    b += dirLight->_b;
-
-                    r = std::min(255, r);
-                    g = std::min(255, g);
-                    b = std::min(255, b);
-                }
-
-                float depth = bary.x * v1.z + bary.y * v2.z + bary.z * v3.z;
+                float depth = baricentricCoords.x * v1.z + baricentricCoords.y * v2.z + baricentricCoords.z * v3.z;
 
                 if (depth > GetPixelDepth(x, y)) {
-                    if (wannaLight) {
-                        SetPixelColor(x, y, std::make_shared<Color>(r, g, b, 255));
-                    }
-                    else {
-                        SetPixelColor(x, y, std::make_shared<Color>(baseColor._r, baseColor._g, baseColor._b, 255));
-                    }
+                    SetPixelColor(x, y, std::make_shared<Color>(r, g, b, 255));
                     SetPixelDepth(x, y, depth);
                 }
-
             }
         }
     }
