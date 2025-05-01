@@ -37,7 +37,7 @@ int main() {
 
     //LIGHT
 
-    float3 directionalDir(1.0f, 0.0f, 0.0f);
+    float3 directionalDir(.0f, 0.0f, -1.0f);
     directionalDir.Normalize();
 
     std::shared_ptr<DirectionalLight> light = std::make_shared<DirectionalLight>(float3(100.0, 0, 0.0), float3(0.05f, 0.05f, 0.05f),
@@ -67,14 +67,14 @@ int main() {
     cube8->GenerateVertexColors();
 
     Texture tex1, tex2;
-    tex1.LoadFromTGA("../tex2.tga");
-    tex2.LoadFromTGA("../tex3.tga");
+    tex1.LoadFromTGA("../tex3.tga");
+    tex2.LoadFromTGA("../tex2.tga");
     pixelBuffer->tex1 = std::make_shared<Texture>(tex1);
     pixelBuffer->tex2 = std::make_shared<Texture>(tex2);
 
-    cube->textureNumber = 2;
-    cube1->textureNumber = 2;
-    cube2->textureNumber = 2;
+    cube->textureNumber = 1;
+    cube1->textureNumber = 1;
+    cube2->textureNumber = 1;
     cube3->textureNumber = 1;
     cube4->textureNumber = 1;
     cube5->textureNumber = 1;

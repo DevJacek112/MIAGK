@@ -15,6 +15,7 @@
 #include "Color.h"
 #include "Texture.h"
 #include "Math/float3.h"
+#include "Meshes/Mesh.h"
 
 class PixelBuffer {
 public:
@@ -42,7 +43,7 @@ public:
 
     void DrawTriangle(float3 canonV1, std::shared_ptr<Color> color1, float3 canonV2, std::shared_ptr<Color> color2, float3 canonV3, std::
                       shared_ptr<Color> color3, float3 uv1, float3 uv2, float3 uv3, int textureNumber, float3 normal1, float3 normal2, float3
-                      normal3);
+                      normal3, std::shared_ptr<Mesh> mesh, float3 pos1, float3 pos2, float3 pos3);
 
     float3 GetBaricentricTriangleCoords(int x1, int y1, int x2, int y2, int x3, int y3, int actualX, int actualY);
 

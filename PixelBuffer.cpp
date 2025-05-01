@@ -6,6 +6,8 @@
 #include <limits>
 
 #include "pixelbuffer.h"
+#include "Light/Light.h"
+#include "Meshes/Mesh.h"
 
 struct TexCoord {
     float u;
@@ -90,19 +92,21 @@ void PixelBuffer::DrawTriangle(
     float3 canonV3, std::shared_ptr<Color> color3,
     float3 uv1, float3 uv2, float3 uv3,
     int textureNumber,
-    float3 normal1, float3 normal2, float3 normal3
+    float3 normal1, float3 normal2, float3 normal3,
+    std::shared_ptr<Mesh> mesh,
+    float3 pos1, float3 pos2, float3 pos3
 ) {
     float3 v1 = float3((canonV1.x + 1) * _width * 0.5f,
-                         (canonV1.y + 1) * _height * 0.5f,
-                         canonV1.z);
+                       (canonV1.y + 1) * _height * 0.5f,
+                       canonV1.z);
 
     float3 v2 = float3((canonV2.x + 1) * _width * 0.5f,
-                         (canonV2.y + 1) * _height * 0.5f,
-                         canonV2.z);
+                       (canonV2.y + 1) * _height * 0.5f,
+                       canonV2.z);
 
     float3 v3 = float3((canonV3.x + 1) * _width * 0.5f,
-                         (canonV3.y + 1) * _height * 0.5f,
-                         canonV3.z);
+                       (canonV3.y + 1) * _height * 0.5f,
+                       canonV3.z);
 
     float area = (v2.x - v1.x) * (v3.y - v1.y) - (v2.y - v1.y) * (v3.x - v1.x);
     if (area > 0) {
@@ -110,86 +114,75 @@ void PixelBuffer::DrawTriangle(
         std::swap(color2, color3);
     }
 
-    float minX = std::min(v1.x, v2.x);
-    minX = std::min(minX, v3.x);
-    minX = std::max(minX, 0.0f);
+    float minX = std::max(0.0f, std::min({v1.x, v2.x, v3.x}));
+    float maxX = std::min((float)_width - 1, std::max({v1.x, v2.x, v3.x}));
+    float minY = std::max(0.0f, std::min({v1.y, v2.y, v3.y}));
+    float maxY = std::min((float)_height - 1, std::max({v1.y, v2.y, v3.y}));
 
-    float maxX = std::max(v1.x, v2.x);
-    maxX = std::max(maxX, v3.x);
-    maxX = std::min(maxX, (float) _width - 1);
+    int dy12 = v1.y - v2.y, dy23 = v2.y - v3.y, dy31 = v3.y - v1.y;
+    int dx12 = v1.x - v2.x, dx23 = v2.x - v3.x, dx31 = v3.x - v1.x;
 
-    float minY = std::min(v1.y, v2.y);
-    minY = std::min(minY, v3.y);
-    minY = std::max(minY, 0.0f);
-
-    float maxY = std::max(v1.y, v2.y);
-    maxY = std::max(maxY, v3.y);
-    maxY = std::min(maxY, (float) _height - 1);
-
-    int dy12 = v1.y - v2.y;
-    int dy23 = v2.y - v3.y;
-    int dy31 = v3.y - v1.y;
-
-    int dx12 = v1.x - v2.x;
-    int dx23 = v2.x - v3.x;
-    int dx31 = v3.x - v1.x;
-
-    bool tl1 = false;
-    bool tl2 = false;
-    bool tl3 = false;
-
-    if (dy12 < 0 || (dy12 == 0 && dx12 > 0)) {
-        tl1 = true;
-    }
-
-    if (dy23 < 0 || (dy23 == 0 && dx23 > 0)) {
-        tl2 = true;
-    }
-
-    if (dy31 < 0 || (dy31 == 0 && dx31) > 0) {
-        tl3 = true;
-    }
+    bool tl1 = dy12 < 0 || (dy12 == 0 && dx12 > 0);
+    bool tl2 = dy23 < 0 || (dy23 == 0 && dx23 > 0);
+    bool tl3 = dy31 < 0 || (dy31 == 0 && dx31 > 0);
 
     for (int y = minY; y < maxY; y++) {
         for (int x = minX; x < maxX; x++) {
-            //rozne warunki w zaleznosci od tego czy krawedz jest lewa albo gorna
-            bool tl1BiggerThen0 = false;
-            if (tl1) {
-                tl1BiggerThen0 = (v1.x - v2.x) * (y - v1.y) - (v1.y - v2.y) * (x - v1.x) >= 0;
-            } else {
-                tl1BiggerThen0 = (v1.x - v2.x) * (y - v1.y) - (v1.y - v2.y) * (x - v1.x) > 0;
-            }
 
-            bool tl2BiggerThen0 = false;
-            if (tl2) {
-                tl2BiggerThen0 = (v2.x - v3.x) * (y - v2.y) - (v2.y - v3.y) * (x - v2.x) >= 0;
-            } else {
-                tl2BiggerThen0 = (v2.x - v3.x) * (y - v2.y) - (v2.y - v3.y) * (x - v2.x) > 0;
-            }
+            bool edge1 = ((v1.x - v2.x) * (y - v1.y) - (v1.y - v2.y) * (x - v1.x)) > (tl1 ? -1 : 0);
+            bool edge2 = ((v2.x - v3.x) * (y - v2.y) - (v2.y - v3.y) * (x - v2.x)) > (tl2 ? -1 : 0);
+            bool edge3 = ((v3.x - v1.x) * (y - v3.y) - (v3.y - v1.y) * (x - v3.x)) > (tl3 ? -1 : 0);
 
-            bool tl3BiggerThen0 = false;
-            if (tl3) {
-                tl3BiggerThen0 = (v3.x - v1.x) * (y - v3.y) - (v3.y - v1.y) * (x - v3.x) >= 0;
-            } else {
-                tl3BiggerThen0 = (v3.x - v1.x) * (y - v3.y) - (v3.y - v1.y) * (x - v3.x) > 0;
-            }
+            if (edge1 && edge2 && edge3) {
+                float3 baricentricCoords = GetBaricentricTriangleCoords(
+                    v1.x, v1.y, v2.x, v2.y, v3.x, v3.y, x, y);
 
-            //sprawdzenie czy piksele w trojkacie
-            if (tl1BiggerThen0 && tl2BiggerThen0 && tl3BiggerThen0) {
-                float3 baricentricCoords = GetBaricentricTriangleCoords(v1.x, v1.y, v2.x, v2.y, v3.x, v3.y, x, y);
-
-                std::shared_ptr<Color> vertexColor = InterpolateColor(color1, color2, color3, baricentricCoords);
-
-                // interpolacja UV
                 float u = baricentricCoords.x * uv1.x + baricentricCoords.y * uv2.x + baricentricCoords.z * uv3.x;
                 float v = baricentricCoords.x * uv1.y + baricentricCoords.y * uv2.y + baricentricCoords.z * uv3.y;
 
                 Color texColor = SampleTexture(textureNumber, u, v);
 
-                // moduluje kolor teksturą
-                int r = (vertexColor->_r * texColor._r /255);
-                int g = (vertexColor->_g * texColor._g /255);
-                int b = (vertexColor->_b * texColor._b /255);
+                int r = texColor._r;
+                int g = texColor._g;
+                int b = texColor._b;
+
+                // Współczynniki barycentryczne względem v3
+                float v3x = v3.x, v3y = v3.y;
+                float denom = dy23 * (-dx31) + (-dx23) * (-dy31);
+
+                float k1 = ((dy23 * (x - v3x)) + (-dx23) * (y - v3y)) / denom;
+                float k2 = ((dy31 * (x - v3x)) + (-dx31) * (y - v3y)) / denom;
+                float k3 = 1.0f - k1 - k2;
+
+                // Interpolacja normalnych
+                float3 interpolatedNormal = normal1 * k1 + normal2 * k2 + normal3 * k3;
+                interpolatedNormal.Normalize();
+
+                // Interpolacja pozycji w świecie
+                float4 w1_float4 = float4((mesh->_vertexProcessor->_obj2world * float4(pos1.x, pos1.y, pos1.z, 1.0f)));
+                float3 w1_float3 = float3(w1_float4.x, w1_float4.y, w1_float4.z);
+
+                float4 w2_float4 = float4((mesh->_vertexProcessor->_obj2world * float4(pos2.x, pos2.y, pos2.z, 1.0f)));
+                float3 w2_float3 = float3(w2_float4.x, w2_float4.y, w2_float4.z);
+
+                float4 w3_float4 = float4((mesh->_vertexProcessor->_obj2world * float4(pos3.x, pos3.y, pos3.z, 1.0f)));
+                float3 w3_float3 = float3(w3_float4.x, w3_float4.y, w3_float4.z);
+
+                float3 interpolatedWorldPos = w1_float3 * k1 + w2_float3 * k2 + w3_float3 * k3;
+
+                // Obliczenie światła
+                std::vector<std::shared_ptr<Light>> lights = mesh->_vertexProcessor->lights;
+                float3 lighting = float3(0, 0, 0);
+
+                for (const auto& light : lights) {
+                    lighting = lighting + light->calculate(*mesh->_vertexProcessor, interpolatedWorldPos, interpolatedNormal);
+                }
+
+                float lightIntensity = (lighting.x + lighting.y + lighting.z) / 3.0f;
+
+                r = std::clamp(int(r * lightIntensity), 0, 255);
+                g = std::clamp(int(g * lightIntensity), 0, 255);
+                b = std::clamp(int(b * lightIntensity), 0, 255);
 
                 float depth = baricentricCoords.x * v1.z + baricentricCoords.y * v2.z + baricentricCoords.z * v3.z;
 
@@ -201,3 +194,4 @@ void PixelBuffer::DrawTriangle(
         }
     }
 }
+
