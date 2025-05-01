@@ -33,8 +33,7 @@ public:
     float3 operator-(const float3& v) const;
     float3& operator-=(const float3& v);
 
-    float3 operator*(float f) const;
-    float3& operator*=(float f);
+
 
     float3 operator/(float f) const;
     float3& operator/=(float f);
@@ -83,6 +82,17 @@ inline float3 operator*(const float3& vec, float scalar) {
 
 inline float3 operator/(const float3& vec, float scalar) {
     return float3(vec.x / scalar, vec.y / scalar, vec.z / scalar);
+}
+
+inline float3& operator*=(float3& a, const float3& b) {
+    a.x *= b.x;
+    a.y *= b.y;
+    a.z *= b.z;
+    return a;
+}
+
+inline float3 operator*(const float3& a, const float3& b) {
+    return float3(a.x * b.x, a.y * b.y, a.z * b.z);
 }
 
 #endif //VECTOR3_H

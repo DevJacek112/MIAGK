@@ -3,6 +3,7 @@
 //
 #include <vector>
 
+#include "VertexProcessor.h"
 #include "../Triangle.h"
 #include "../Color.h"
 #include "../Math/float3.h"
@@ -11,15 +12,17 @@
 #ifndef MESH_H
 #define MESH_H
 
-
-
+struct Vertex {
+    float3 position;
+    float3 normal;
+    std::shared_ptr<Color> vertexColor;
+};
 
 class Mesh {
 public:
-    std::vector<float3> _vertices;
-    std::vector<float3> _normals;
-    std::vector<std::shared_ptr<Color>> _vertexColors;
+    std::vector<Vertex> _vertices;
     std::vector<Triangle> _triangles;
+    std::shared_ptr<VertexProcessor> _vertexProcessor;
 
     float _size;
     float3 _centerPosition;

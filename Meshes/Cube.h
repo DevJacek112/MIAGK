@@ -8,7 +8,7 @@
 
 class Cube : public Mesh {
 public:
-    Cube(float size, float3 center = float3(0, 0, 0));
+    Cube(float3 position, float size, float4x4 view2project, float4x4 world2view, float4x4 object2world);
 };
 
 

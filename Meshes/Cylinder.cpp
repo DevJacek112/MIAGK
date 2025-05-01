@@ -1,6 +1,12 @@
 #include "Cylinder.h"
 
-Cylinder::Cylinder(float3 position, float size, int segments) {
+Cylinder::Cylinder(float3 position, float size, int segments, float4x4 view2project, float4x4 world2view, float4x4 object2world) {
+
+    /*_vertexProcessor = std::make_shared<VertexProcessor>();
+    _vertexProcessor->_view2proj = view2project;
+    _vertexProcessor->_world2view = world2view;
+    _vertexProcessor->_obj2world = object2world;
+
     if (segments < 3) segments = 3;
 
     float radius = size * 0.5f;
@@ -45,5 +51,5 @@ Cylinder::Cylinder(float3 position, float size, int segments) {
         int nextBottom = 2 + ((i + 1) % segments) * 2 + 1;
 
         _triangles.push_back(Triangle(1, bottom, nextBottom));
-    }
+    }*/
 }

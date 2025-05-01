@@ -34,4 +34,10 @@ add_executable(RepoMIAGK main.cpp
         Meshes/Torus.h
         Texture.cpp
         Texture.h
+        Meshes/VertexProcessor.cpp
+        Meshes/VertexProcessor.h
+        Light/Light.cpp
+        Light/Light.h
+        Light/DirectionalLight.cpp
+        Light/DirectionalLight.h
 )

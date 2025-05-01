@@ -45,16 +45,7 @@ float3& float3::operator-=(const float3& v) {
     return *this;
 }
 
-// Przeciążenie operatora * (skalowanie przez skalar)
-float3 float3::operator*(float f)  const{
-    return this->Mag(f);
-}
 
-// Przeciążenie operatora *= (skalowanie w miejscu)
-float3& float3::operator*=(float f) {
-    this->MagInPlace(f);
-    return *this;
-}
 
 // Przeciążenie operatora / (dzielenie przez skalar)
 float3 float3::operator/(float f)  const{

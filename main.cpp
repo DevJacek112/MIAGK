@@ -6,6 +6,7 @@
 #include "PixelBuffer.h"
 #include "Texture.h"
 #include "TGAWriter.h"
+#include "Light/DirectionalLight.h"
 #include "Math/float4x4.h"
 #include "Meshes/Cone.h"
 #include "Meshes/Cube.h"
@@ -24,15 +25,36 @@ int main() {
     camera.setPerspective(90.0f, 1.0f, 0.1f, 100.0f);
     camera.SetPixelBuffer(pixelBuffer);
 
-    std::shared_ptr<Cube> cube = std::make_shared<Cube>(0.5, float3(0,0,-1));
-    std::shared_ptr<Cube> cube1 = std::make_shared<Cube>(0.5, float3(1,0,-1));
-    std::shared_ptr<Cube> cube2 = std::make_shared<Cube>(0.5, float3(-1,0,-1));
-    std::shared_ptr<Cube> cube3 = std::make_shared<Cube>(0.5, float3(0,1,-1));
-    std::shared_ptr<Cube> cube4 = std::make_shared<Cube>(0.5, float3(0,-1,-1));
-    std::shared_ptr<Cube> cube5 = std::make_shared<Cube>(0.5, float3(1,1,-1));
-    std::shared_ptr<Cube> cube6 = std::make_shared<Cube>(0.5, float3(1,-1,-1));
-    std::shared_ptr<Cube> cube7 = std::make_shared<Cube>(0.5, float3(-1,1,-1));
-    std::shared_ptr<Cube> cube8 = std::make_shared<Cube>(0.5, float3(-1,-1,-1));
+    std::shared_ptr<Cube> cube = std::make_shared<Cube>(float3(0,0,-1), 0.5, camera._view2Proj, camera._world2View, camera._obj2world);
+    std::shared_ptr<Cube> cube1 = std::make_shared<Cube>(float3(1,0,-1), 0.5, camera._view2Proj, camera._world2View, camera._obj2world);
+    std::shared_ptr<Cube> cube2 = std::make_shared<Cube>(float3(-1,0,-1), 0.5, camera._view2Proj, camera._world2View, camera._obj2world);
+    std::shared_ptr<Cube> cube3 = std::make_shared<Cube>(float3(0,1,-1), 0.5, camera._view2Proj, camera._world2View, camera._obj2world);
+    std::shared_ptr<Cube> cube4 = std::make_shared<Cube>(float3(0,-1,-1), 0.5, camera._view2Proj, camera._world2View, camera._obj2world);
+    std::shared_ptr<Cube> cube5 = std::make_shared<Cube>(float3(1,1,-1), 0.5, camera._view2Proj, camera._world2View, camera._obj2world);
+    std::shared_ptr<Cube> cube6 = std::make_shared<Cube>(float3(1,-1,-1), 0.5, camera._view2Proj, camera._world2View, camera._obj2world);
+    std::shared_ptr<Cube> cube7 = std::make_shared<Cube>(float3(-1,1,-1), 0.5, camera._view2Proj, camera._world2View, camera._obj2world);
+    std::shared_ptr<Cube> cube8 = std::make_shared<Cube>(float3(-1,-1,-1), 0.5, camera._view2Proj, camera._world2View, camera._obj2world);
+
+    //LIGHT
+
+    float3 directionalDir(1.0f, 0.0f, 0.0f);
+    directionalDir.Normalize();
+
+    std::shared_ptr<DirectionalLight> light = std::make_shared<DirectionalLight>(float3(100.0, 0, 0.0), float3(0.05f, 0.05f, 0.05f),
+                                                   float3(1.0f,1.0f,0.5f), float3(0.0f, 0.0f, 1.0f),
+                                                   32, directionalDir);
+
+    cube->_vertexProcessor->addLight(light);
+    cube1->_vertexProcessor->addLight(light);
+    cube2->_vertexProcessor->addLight(light);
+    cube3->_vertexProcessor->addLight(light);
+    cube4->_vertexProcessor->addLight(light);
+    cube5->_vertexProcessor->addLight(light);
+    cube6->_vertexProcessor->addLight(light);
+    cube7->_vertexProcessor->addLight(light);
+    cube8->_vertexProcessor->addLight(light);
+
+    //END OF LIGHT
 
     cube->GenerateVertexColors();
     cube1->GenerateVertexColors();
@@ -50,9 +72,9 @@ int main() {
     pixelBuffer->tex1 = std::make_shared<Texture>(tex1);
     pixelBuffer->tex2 = std::make_shared<Texture>(tex2);
 
-    cube->textureNumber = 1;
-    cube1->textureNumber = 1;
-    cube2->textureNumber = 1;
+    cube->textureNumber = 2;
+    cube1->textureNumber = 2;
+    cube2->textureNumber = 2;
     cube3->textureNumber = 1;
     cube4->textureNumber = 1;
     cube5->textureNumber = 1;

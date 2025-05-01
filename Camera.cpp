@@ -45,13 +45,13 @@ void Camera::RenderTriangle(Triangle &triangle, const Mesh& mesh) {
     int i1 = triangle[1];
     int i2 = triangle[2];
 
-    float3 v0 = mesh._vertices[i0];
-    float3 v1 = mesh._vertices[i1];
-    float3 v2 = mesh._vertices[i2];
+    float3 v0 = mesh._vertices[i0].position;
+    float3 v1 = mesh._vertices[i1].position;
+    float3 v2 = mesh._vertices[i2].position;
 
-    auto c0 = mesh._vertexColors[i0];
-    auto c1 = mesh._vertexColors[i1];
-    auto c2 = mesh._vertexColors[i2];
+    auto c0 = mesh._vertices[i0].vertexColor;
+    auto c1 = mesh._vertices[i1].vertexColor;
+    auto c2 = mesh._vertices[i2].vertexColor;
 
     // lokal -> world
     float4 v0_world = float4(v0.x, v0.y, v0.z, 1.0f);
@@ -87,6 +87,8 @@ void Camera::SetPixelBuffer(std::shared_ptr<PixelBuffer> pixelBuffer) {
 
 void Camera::RenderMeshes() {
     for (auto& mesh : _meshes) {
+
+
         for (auto& triangle : mesh->_triangles) {
             RenderTriangle(triangle, *mesh);
         }
