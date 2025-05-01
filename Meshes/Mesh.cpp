@@ -1,6 +1,24 @@
 #include "Mesh.h"
 #include "../Light/Light.h"
 
+/*void Mesh::GenerateNormals() {
+    _normals.resize(_vertices.size(), float3(0, 0, 0));
+
+    for (auto& tri : _triangles) {
+        float3 v0 = _vertices[tri[0]];
+        float3 v1 = _vertices[tri[1]];
+        float3 v2 = _vertices[tri[2]];
+
+        _normals[tri[0]] = VertexProcessor::transformNormal(v0, world2view);
+        _normals[tri[1]] = VertexProcessor::transformNormal(v1, world2view);
+        _normals[tri[2]] = VertexProcessor::transformNormal(v2, world2view);
+    }
+
+    for (auto& n : _normals) {
+        n.Normalize();
+    }
+}*/
+
 void Mesh::GenerateVertexColors() {
     for (auto v: _vertices) {
         float4 worldPos4 = _vertexProcessor->_obj2world * float4(v.position.x, v.position.y, v.position.z, 1.0f);

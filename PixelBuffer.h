@@ -41,7 +41,8 @@ public:
     void SetAllPixelsColor(std::shared_ptr<Color> color);
 
     void DrawTriangle(float3 canonV1, std::shared_ptr<Color> color1, float3 canonV2, std::shared_ptr<Color> color2, float3 canonV3, std::
-                                    shared_ptr<Color> color3, float3 uv1, float3 uv2, float3 uv3, int textureNumber);
+                      shared_ptr<Color> color3, float3 uv1, float3 uv2, float3 uv3, int textureNumber, float3 normal1, float3 normal2, float3
+                      normal3);
 
     float3 GetBaricentricTriangleCoords(int x1, int y1, int x2, int y2, int x3, int y3, int actualX, int actualY);
 

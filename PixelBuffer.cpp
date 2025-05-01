@@ -89,7 +89,8 @@ void PixelBuffer::DrawTriangle(
     float3 canonV2, std::shared_ptr<Color> color2,
     float3 canonV3, std::shared_ptr<Color> color3,
     float3 uv1, float3 uv2, float3 uv3,
-    int textureNumber
+    int textureNumber,
+    float3 normal1, float3 normal2, float3 normal3
 ) {
     float3 v1 = float3((canonV1.x + 1) * _width * 0.5f,
                          (canonV1.y + 1) * _height * 0.5f,

@@ -26,7 +26,7 @@ class Camera {
 
     void setPerspective(float fovy, float aspect, float near, float far);
 
-    void RenderTriangle(Triangle &triangle, const Mesh &mesh);
+    void RenderTriangle(Triangle &triangle, const Mesh &mesh, float3 normal1, float3 normal2, float3 normal3);
 
     void SetPixelBuffer(std::shared_ptr<PixelBuffer> pixelBuffer);
 

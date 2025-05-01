@@ -39,7 +39,7 @@ void Camera::setPerspective(float fovy, float aspect, float near, float far) {
     _view2Proj = float4x4(col0, col1, col2, col3);
 }
 
-void Camera::RenderTriangle(Triangle &triangle, const Mesh& mesh) {
+void Camera::RenderTriangle(Triangle &triangle, const Mesh& mesh, float3 normal1, float3 normal2, float3 normal3) {
 
     int i0 = triangle[0];
     int i1 = triangle[1];
@@ -78,7 +78,7 @@ void Camera::RenderTriangle(Triangle &triangle, const Mesh& mesh) {
         v1_ndc, c1,
         v2_ndc, c2,
         float3(0,0,0), float3(1,0,0), float3(0,1,0),
-        mesh.textureNumber);
+        mesh.textureNumber, normal1, normal2, normal3);
 }
 
 void Camera::SetPixelBuffer(std::shared_ptr<PixelBuffer> pixelBuffer) {
@@ -87,10 +87,17 @@ void Camera::SetPixelBuffer(std::shared_ptr<PixelBuffer> pixelBuffer) {
 
 void Camera::RenderMeshes() {
     for (auto& mesh : _meshes) {
-
-
         for (auto& triangle : mesh->_triangles) {
-            RenderTriangle(triangle, *mesh);
+            int index0 = triangle[0];
+            int index1 = triangle[1];
+            int index2 = triangle[2];
+
+            float3 normal1 = mesh->_vertexProcessor->transformNormal(mesh->_vertices[index0].normal);
+            float3 normal2 = mesh->_vertexProcessor->transformNormal(mesh->_vertices[index1].normal);
+            float3 normal3 = mesh->_vertexProcessor->transformNormal(mesh->_vertices[index2].normal);
+
+            RenderTriangle(triangle, *mesh, normal1, normal2, normal3);
         }
     }
 }
+
