@@ -40,4 +40,6 @@ add_executable(RepoMIAGK main.cpp
         Light/Light.h
         Light/DirectionalLight.cpp
         Light/DirectionalLight.h
+        Light/PointLight.cpp
+        Light/PointLight.h
 )

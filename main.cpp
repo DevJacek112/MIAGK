@@ -7,6 +7,7 @@
 #include "Texture.h"
 #include "TGAWriter.h"
 #include "Light/DirectionalLight.h"
+#include "Light/PointLight.h"
 #include "Math/float4x4.h"
 #include "Meshes/Cone.h"
 #include "Meshes/Cube.h"
@@ -44,7 +45,11 @@ int main() {
                                                    float3(1.0f,1.0f,0.5f), float3(0.0f, 0.0f, 1.0f),
                                                    32, directionalDir);
 
-    cube->_vertexProcessor->addLight(light);
+    std::shared_ptr<PointLight> light2 = std::make_shared<PointLight>(float3(-2, 0, 0.0), float3(0.05f, 0.05f, 0.05f),
+                                                   float3(1.0f,1.0f,0.5f), float3(0.0f, 0.0f, 1.0f),
+                                                   32);
+    
+    /*cube->_vertexProcessor->addLight(light);
     cube1->_vertexProcessor->addLight(light);
     cube2->_vertexProcessor->addLight(light);
     cube3->_vertexProcessor->addLight(light);
@@ -52,7 +57,17 @@ int main() {
     cube5->_vertexProcessor->addLight(light);
     cube6->_vertexProcessor->addLight(light);
     cube7->_vertexProcessor->addLight(light);
-    cube8->_vertexProcessor->addLight(light);
+    cube8->_vertexProcessor->addLight(light);*/
+
+    cube->_vertexProcessor->addLight(light2);
+    cube1->_vertexProcessor->addLight(light2);
+    cube2->_vertexProcessor->addLight(light2);
+    cube3->_vertexProcessor->addLight(light2);
+    cube4->_vertexProcessor->addLight(light2);
+    cube5->_vertexProcessor->addLight(light2);
+    cube6->_vertexProcessor->addLight(light2);
+    cube7->_vertexProcessor->addLight(light2);
+    cube8->_vertexProcessor->addLight(light2);
 
     //END OF LIGHT
 
