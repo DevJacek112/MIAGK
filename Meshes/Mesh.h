@@ -18,10 +18,14 @@ struct Vertex {
     std::shared_ptr<Color> vertexColor;
 };
 
+struct Index {
+    int v1, v2, v3;
+};
+
 class Mesh {
 public:
     std::vector<Vertex> _vertices;
-    std::vector<Triangle> _triangles;
+    std::vector<Index> _indices;
     std::shared_ptr<VertexProcessor> _vertexProcessor;
 
     float _size;

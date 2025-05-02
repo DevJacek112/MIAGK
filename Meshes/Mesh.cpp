@@ -20,7 +20,12 @@
 }*/
 
 void Mesh::GenerateVertexColors() {
-    for (auto v: _vertices) {
+    for (auto& v: _vertices) {
+        v.normal = _vertexProcessor->transformNormal(v.normal);
+        v.normal.Normalize();
+
+        /*std::cout << v.normal.x << ", " << v.normal.y << ", " << v.normal.z << std::endl;*/
+
         float4 worldPos4 = _vertexProcessor->_obj2world * float4(v.position.x, v.position.y, v.position.z, 1.0f);
         float3 worldPos = float3(worldPos4.x, worldPos4.y, worldPos4.z);
 
@@ -29,10 +34,10 @@ void Mesh::GenerateVertexColors() {
         worldNormal.Normalize();
 
         float3 color(0, 0, 0);
-        for (const std::shared_ptr<Light>& light : _vertexProcessor->getLights())
+        /*for (const std::shared_ptr<Light>& light : _vertexProcessor->getLights())
         {
             color = color + light->calculate(*_vertexProcessor, worldPos, worldNormal) * float3(v.vertexColor->_r, v.vertexColor->_g, v.vertexColor->_b);
-        }
+        }*/
 
         color.r = std::clamp(color.r, 0.0f, 1.0f);
         color.g = std::clamp(color.g, 0.0f, 1.0f);

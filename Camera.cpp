@@ -9,6 +9,11 @@
 
 Camera::Camera() {
     setPerspective(90.0f, 1.0f, 0.1f, 100.0f);
+
+    _obj2world[0] = float4(1, 0, 0, 0);
+    _obj2world[1] = float4(0, 1, 0, 0);
+    _obj2world[2] = float4(0, 0, 1, 0);
+    _obj2world[3] = float4(0, 0, 0, 1);
 }
 
 void Camera::setLookat(float3 eye, float3 center, float3 up) {
@@ -39,6 +44,16 @@ void Camera::setPerspective(float fovy, float aspect, float near, float far) {
     float4 col3 = float4(0.0f, 0.0f, (2 * far * near) / (near - far), 0.0f);
 
     _view2Proj = float4x4(col0, col1, col2, col3);
+
+    /*for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            std::cout << _view2Proj[i][j] << ", ";
+        }
+        std::cout << std::endl;
+    }
+    std::cout << std::endl;
+    std::cout << std::endl;
+    std::cout << std::endl;*/
 }
 
 void Camera::RenderTriangle(Triangle &triangle, const Mesh& mesh, float3 normal1, float3 normal2, float3 normal3, float3 pos1, float3 pos2, float3 pos3) {
@@ -89,17 +104,29 @@ void Camera::SetPixelBuffer(std::shared_ptr<PixelBuffer> pixelBuffer) {
 
 void Camera::RenderMeshes() {
     for (auto& mesh : _meshes) {
-        for (auto& triangle : mesh->_triangles) {
-            int index0 = triangle[0];
-            int index1 = triangle[1];
-            int index2 = triangle[2];
+        for (auto& index : mesh->_indices) {
+            int index0 = index.v1;
+            int index1 = index.v2;
+            int index2 = index.v3;
 
             float3 normal1 = mesh->_vertexProcessor->transformNormal(mesh->_vertices[index0].normal);
             float3 normal2 = mesh->_vertexProcessor->transformNormal(mesh->_vertices[index1].normal);
             float3 normal3 = mesh->_vertexProcessor->transformNormal(mesh->_vertices[index2].normal);
 
-            RenderTriangle(triangle, *mesh, normal1, normal2, normal3, mesh->_vertices[index0].position, mesh->_vertices[index1].position, mesh->_vertices[index2].position);
+            /*std::cout << mesh->_vertices[index0].normal.x << " " << mesh->_vertices[index0].normal.y << " " << mesh->_vertices[index0].normal.z << std::endl;
+            std::cout << normal2.x << " " << normal2.y << " " << normal2.z << std::endl;
+            std::cout << normal3.x << " " << normal3.y << " " << normal3.z << std::endl;
+            std::cout << std::endl;*/
+
+            Triangle triangle(index0, index1, index2);
+
+            RenderTriangle(triangle, *mesh,
+                           normal1, normal2, normal3,
+                           mesh->_vertices[index0].position,
+                           mesh->_vertices[index1].position,
+                           mesh->_vertices[index2].position);
         }
     }
 }
+
 

@@ -96,6 +96,11 @@ void PixelBuffer::DrawTriangle(
     std::shared_ptr<Mesh> mesh,
     float3 pos1, float3 pos2, float3 pos3
 ) {
+
+    /*std::cout << normal1.x << " " << normal1.y << " " << normal1.z << std::endl;
+    std::cout << normal2.x << " " << normal2.y << " " << normal2.z << std::endl;
+    std::cout << normal3.x << " " << normal3.y << " " << normal3.z << std::endl;*/
+
     float3 v1 = float3((canonV1.x + 1) * _width * 0.5f,
                        (canonV1.y + 1) * _height * 0.5f,
                        canonV1.z);
@@ -108,11 +113,11 @@ void PixelBuffer::DrawTriangle(
                        (canonV3.y + 1) * _height * 0.5f,
                        canonV3.z);
 
-    float area = (v2.x - v1.x) * (v3.y - v1.y) - (v2.y - v1.y) * (v3.x - v1.x);
+    /*float area = (v2.x - v1.x) * (v3.y - v1.y) - (v2.y - v1.y) * (v3.x - v1.x);
     if (area > 0) {
         std::swap(v2, v3);
         std::swap(color2, color3);
-    }
+    }*/
 
     float minX = std::max(0.0f, std::min({v1.x, v2.x, v3.x}));
     float maxX = std::min((float)_width - 1, std::max({v1.x, v2.x, v3.x}));

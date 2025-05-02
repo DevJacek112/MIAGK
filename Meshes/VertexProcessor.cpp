@@ -19,5 +19,6 @@ float3 VertexProcessor::transformNormal(const float3& normal) {
     float4 transformed = _world2view * n;
     float3 result = float3(transformed.x, transformed.y, transformed.z);
     result.Normalize();
+    //std::cout << normal.x << ", " << normal.y << ", " << normal.z << std::endl;
     return result;
 }

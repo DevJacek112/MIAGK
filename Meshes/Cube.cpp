@@ -1,6 +1,6 @@
 #include "Cube.h"
 
-Cube::Cube(float3 position, float size, float4x4 view2project, float4x4 world2view, float4x4 object2world) {
+Cube::Cube(float3 position, float size, float4x4 view2project, float4x4 world2view, const float4x4 &object2world) {
 
     _vertexProcessor = std::make_shared<VertexProcessor>();
     _vertexProcessor->_view2proj = view2project;
@@ -36,11 +36,18 @@ Cube::Cube(float3 position, float size, float4x4 view2project, float4x4 world2vi
         float3 edge2 = p[i2] - p[i0];
         float3 normal = edge1.Cross(edge2).GetNormalized();
 
-        _vertices.push_back({ p[i0], normal, make_color() });
-        _vertices.push_back({ p[i1], normal, make_color() });
-        _vertices.push_back({ p[i2], normal, make_color() });
-        _vertices.push_back({ p[i3], normal, make_color() });
+        int baseIndex = static_cast<int>(_vertices.size());
+
+        _vertices.push_back({ p[i0], normal, make_color() }); // 0
+        _vertices.push_back({ p[i1], normal, make_color() }); // 1
+        _vertices.push_back({ p[i2], normal, make_color() }); // 2
+        _vertices.push_back({ p[i3], normal, make_color() }); // 3
+
+        // Dodaj dwa trójkąty na podstawie czterech wierzchołków (quad -> 2 triangles)
+        _indices.push_back({ baseIndex + 0, baseIndex + 1, baseIndex + 2 });
+        _indices.push_back({ baseIndex + 0, baseIndex + 2, baseIndex + 3 });
     };
+
 
     // Front face (-Z)
     add_face(0, 1, 2, 3);
@@ -54,21 +61,6 @@ Cube::Cube(float3 position, float size, float4x4 view2project, float4x4 world2vi
     add_face(3, 2, 6, 7);
     // Bottom face (-Y)
     add_face(4, 5, 1, 0);
-
-    _triangles = {
-        // Front face
-        Triangle(0, 1, 2), Triangle(0, 2, 3),
-        // Back face
-        Triangle(4, 5, 6), Triangle(4, 6, 7),
-        // Left face
-        Triangle(8, 9, 10), Triangle(8, 10, 11),
-        // Right face
-        Triangle(12, 13, 14), Triangle(12, 14, 15),
-        // Top face
-        Triangle(16, 17, 18), Triangle(16, 18, 19),
-        // Bottom face
-        Triangle(20, 21, 22), Triangle(20, 22, 23)
-    };
 
     GenerateVertexColors();
 }
