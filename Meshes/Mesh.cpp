@@ -33,16 +33,23 @@ void Mesh::GenerateVertexColors() {
         float3 worldNormal = float3(worldNormal4.x, worldNormal4.y, worldNormal4.z);
         worldNormal.Normalize();
 
-        float3 color(0, 0, 0);
-        for (const std::shared_ptr<Light>& light : _vertexProcessor->getLights())
-        {
-            color = color + light->calculate(*_vertexProcessor, worldPos, worldNormal) * float3(v.vertexColor->_r, v.vertexColor->_g, v.vertexColor->_b);
+
+
+        float3 lighting = float3(0.5, 0.5, 0.5);
+
+        for (const auto& light : _vertexProcessor->getLights()) {
+            lighting = lighting + light->calculate(*_vertexProcessor, worldPos, worldNormal);
         }
 
-        color.r = std::clamp(color.r, 0.0f, 1.0f);
-        color.g = std::clamp(color.g, 0.0f, 1.0f);
-        color.b = std::clamp(color.b, 0.0f, 1.0f);
-        v.vertexColor = std::make_shared<Color>(color.r * 255, color.g * 255, color.b * 255, 1.0f);
+        float lightIntensity = (lighting.x + lighting.y + lighting.z) / 3.0f;
+
+        float r = v.vertexColor->_r, g = v.vertexColor->_g, b = v.vertexColor->_b;
+
+        r = std::clamp(int(r * lightIntensity), 0, 255);
+        g = std::clamp(int(g * lightIntensity), 0, 255);
+        b = std::clamp(int(b * lightIntensity), 0, 255);
+
+        v.vertexColor = std::make_shared<Color>(r, g, b, 1.0f);
     }
 }
 

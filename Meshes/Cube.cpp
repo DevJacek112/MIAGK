@@ -12,10 +12,6 @@ Cube::Cube(float3 position, float size, float4x4 view2project, float4x4 world2vi
 
     float h = size / 2.0f;
 
-    auto make_color = []() {
-        return std::make_shared<Color>(255, 255, 255, 255);
-    };
-
     // Wierzchołki sześcianu
     float3 p[8] = {
         float3(-h, -h, -h) + position, // 0
@@ -38,10 +34,10 @@ Cube::Cube(float3 position, float size, float4x4 view2project, float4x4 world2vi
 
         int baseIndex = static_cast<int>(_vertices.size());
 
-        _vertices.push_back({ p[i0], normal, make_color() }); // 0
-        _vertices.push_back({ p[i1], normal, make_color() }); // 1
-        _vertices.push_back({ p[i2], normal, make_color() }); // 2
-        _vertices.push_back({ p[i3], normal, make_color() }); // 3
+        _vertices.push_back({ p[i0], normal, std::make_shared<Color>(255,255,0,0) }); // 0
+        _vertices.push_back({ p[i1], normal, std::make_shared<Color>(255,255,0,0) }); // 1
+        _vertices.push_back({ p[i2], normal, std::make_shared<Color>(255,255,0,0) }); // 2
+        _vertices.push_back({ p[i3], normal, std::make_shared<Color>(255,255,0,0) }); // 3
 
         // Dodaj dwa trójkąty na podstawie czterech wierzchołków (quad -> 2 triangles)
         _indices.push_back({ baseIndex + 0, baseIndex + 1, baseIndex + 2 });

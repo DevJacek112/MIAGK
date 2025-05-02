@@ -41,7 +41,7 @@ public:
 
     void GenerateVertexColors();
 
-    LightningMode lightningMode = PIXELS;
+    LightningMode lightningMode = VERTICES;
 };
 
 

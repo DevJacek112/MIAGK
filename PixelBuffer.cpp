@@ -97,6 +97,10 @@ void PixelBuffer::DrawTriangle(
     float3 pos1, float3 pos2, float3 pos3
 ) {
 
+    /*std::cout << color1->_r << " " << color1->_g << " " << color1->_b << std::endl;
+    std::cout << color2->_r << " " << color2->_g << " " << color2->_b << std::endl;
+    std::cout << color3->_r << " " << color3->_g << " " << color3->_b << std::endl;*/
+
     float3 v1 = float3((canonV1.x + 1) * _width * 0.5f,
                        (canonV1.y + 1) * _height * 0.5f,
                        canonV1.z);
@@ -180,9 +184,10 @@ void PixelBuffer::DrawTriangle(
                     b = std::clamp(int(b * lightIntensity), 0, 255);
                 }
                 else if (mesh->lightningMode == VERTICES) {
-                    /*r = color1->_r;
-                    g = color1->_g;
-                    b = color1->_b;*/
+                    std::shared_ptr<Color> finalColor = InterpolateColor(color1, color2, color3, baricentricCoords);
+                    r = finalColor->_r;
+                    g = finalColor->_g;
+                    b = finalColor->_b;
                 }
 
 
