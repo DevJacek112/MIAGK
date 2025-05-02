@@ -22,6 +22,12 @@ struct Index {
     int v1, v2, v3;
 };
 
+enum LightningMode {
+    NONE,
+    VERTICES,
+    PIXELS
+};
+
 class Mesh {
 public:
     std::vector<Vertex> _vertices;
@@ -34,6 +40,8 @@ public:
     bool wannaLight = true;
 
     void GenerateVertexColors();
+
+    LightningMode lightningMode = PIXELS;
 };
 
 

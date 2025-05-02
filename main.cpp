@@ -22,14 +22,14 @@ int main() {
 
     Camera camera;
 
-    camera.setLookat(float3(0,0,-1), float3(0,0,0), float3(0,1,0));
+    //camera.setLookat(float3(0,0,-1), float3(0,0,0), float3(0,1,0));
     camera.setLookat(float3(0,0,0), float3(0,0,-1), float3(0,1,0));
     camera.setPerspective(120.0f, 800.0f/600, 0.1f, 100.0f);
     camera.SetPixelBuffer(pixelBuffer);
 
     std::shared_ptr<Cube> cube = std::make_shared<Cube>(float3(0,0,-1), 0.5, camera._view2Proj, camera._world2View, camera._obj2world);
     std::shared_ptr<Cube> cube1 = std::make_shared<Cube>(float3(1,0,-0.8), 0.5, camera._view2Proj, camera._world2View, camera._obj2world);
-    std::shared_ptr<Cube> cube2 = std::make_shared<Cube>(float3(-1,0,-1), 0.5, camera._view2Proj, camera._world2View, camera._obj2world);
+    std::shared_ptr<Cube> cube2 = std::make_shared<Cube>(float3(-1,0,-0.8), 0.5, camera._view2Proj, camera._world2View, camera._obj2world);
     std::shared_ptr<Cube> cube3 = std::make_shared<Cube>(float3(0,1,-1), 0.5, camera._view2Proj, camera._world2View, camera._obj2world);
     std::shared_ptr<Cube> cube4 = std::make_shared<Cube>(float3(0,-1,-1), 0.5, camera._view2Proj, camera._world2View, camera._obj2world);
     std::shared_ptr<Cube> cube5 = std::make_shared<Cube>(float3(1,1,-1), 0.5, camera._view2Proj, camera._world2View, camera._obj2world);
@@ -42,7 +42,7 @@ int main() {
 
     //LIGHT
 
-    float3 directionalDir(1.0f, 0.0f, 0.0f);
+    float3 directionalDir(0.0f, 0.0f, 1.0f);
     directionalDir.Normalize();
 
     std::shared_ptr<DirectionalLight> dirLight = std::make_shared<DirectionalLight>(float3(100.0, 0, 0.0), float3(0.05f, 0.05f, 0.05f),
@@ -53,7 +53,7 @@ int main() {
                                                    float3(2.0f,2.0f,2.5f), float3(0.0f, 0.0f, 1.0f),
                                                    32);
 
-    cube->_vertexProcessor->addLight(dirLight);
+    /*cube->_vertexProcessor->addLight(dirLight);
     cube1->_vertexProcessor->addLight(dirLight);
     cube2->_vertexProcessor->addLight(dirLight);
     cube3->_vertexProcessor->addLight(dirLight);
@@ -61,7 +61,7 @@ int main() {
     cube5->_vertexProcessor->addLight(dirLight);
     cube6->_vertexProcessor->addLight(dirLight);
     cube7->_vertexProcessor->addLight(dirLight);
-    cube8->_vertexProcessor->addLight(dirLight);
+    cube8->_vertexProcessor->addLight(dirLight);*/
 
     cube->_vertexProcessor->addLight(pointLight);
     cube1->_vertexProcessor->addLight(pointLight);
