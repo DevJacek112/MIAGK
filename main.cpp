@@ -35,7 +35,7 @@ int main() {
     std::shared_ptr<Cube> cube5 = std::make_shared<Cube>(float3(1,1,-1), 0.5, camera._view2Proj, camera._world2View, camera._obj2world);
     std::shared_ptr<Cube> cube6 = std::make_shared<Cube>(float3(1,-1,-1), 0.5, camera._view2Proj, camera._world2View, camera._obj2world);
     std::shared_ptr<Cube> cube7 = std::make_shared<Cube>(float3(-1.5,1,-1), 0.5, camera._view2Proj, camera._world2View, camera._obj2world);
-    std::shared_ptr<Cube> cube8 = std::make_shared<Cube>(float3(-1,-1,-1), 0.5, camera._view2Proj, camera._world2View, camera._obj2world);
+    std::shared_ptr<Cube> cube8 = std::make_shared<Cube>(float3(-1.5,-1,-1), 0.5, camera._view2Proj, camera._world2View, camera._obj2world);
 
 
     //std::shared_ptr<Cylinder> cube = std::make_shared<Cylinder>(float3(0,0,-1), 0.5, 8, camera._view2Proj, camera._world2View, camera._obj2world);
@@ -49,8 +49,8 @@ int main() {
                                                    float3(1.0f,1.0f,0.5f), float3(0.0f, 0.0f, 1.0f),
                                                    32, directionalDir);
 
-    std::shared_ptr<PointLight> pointLight = std::make_shared<PointLight>(float3(-0.25, 1, -.78), float3(0.05f, 0.05f, 0.05f),
-                                                   float3(2.0f,2.0f,2.5f), float3(0.0f, 0.0f, 1.0f),
+    std::shared_ptr<PointLight> pointLight = std::make_shared<PointLight>(float3(0, 0, -2), float3(0.05f, 0.05f, 0.05f),
+                                                   float3(0.5f,0.5f,0.5f), float3(1.0f, 1.0f, 1.0f),
                                                    32);
 
     /*cube->_vertexProcessor->addLight(dirLight);
@@ -87,7 +87,7 @@ int main() {
 
     Texture tex1, tex2;
     tex1.LoadFromTGA("../tex3.tga");
-    tex2.LoadFromTGA("../tex2.tga");
+    tex2.LoadFromTGA("../tex3.tga");
     pixelBuffer->tex1 = std::make_shared<Texture>(tex1);
     pixelBuffer->tex2 = std::make_shared<Texture>(tex2);
 

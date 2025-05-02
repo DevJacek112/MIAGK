@@ -113,6 +113,12 @@ void PixelBuffer::DrawTriangle(
                        (canonV3.y + 1) * _height * 0.5f,
                        canonV3.z);
 
+    /*float area = (v2.x - v1.x) * (v3.y - v1.y) - (v2.y - v1.y) * (v3.x - v1.x);
+    if (area > 0) {
+        std::swap(v2, v3);
+        std::swap(color2, color3);
+    }*/
+
     float minX = std::max(0.0f, std::min({v1.x, v2.x, v3.x}));
     float maxX = std::min((float)_width - 1, std::max({v1.x, v2.x, v3.x}));
     float minY = std::max(0.0f, std::min({v1.y, v2.y, v3.y}));
@@ -188,9 +194,20 @@ void PixelBuffer::DrawTriangle(
                     r = finalColor->_r;
                     g = finalColor->_g;
                     b = finalColor->_b;
+                }else if (mesh->lightningMode == NONE) {
+                    float u = baricentricCoords.x * uv1.x + baricentricCoords.y * uv2.x + baricentricCoords.z * uv3.x;
+                    float v = baricentricCoords.x * uv1.y + baricentricCoords.y * uv2.y + baricentricCoords.z * uv3.y;
+
+                    Color texColor = SampleTexture(textureNumber, u, v);
+
+                    r = texColor._r;
+                    g = texColor._g;
+                    b = texColor._b;
+
+                    r = std::clamp(int(r), 0, 255);
+                    g = std::clamp(int(g), 0, 255);
+                    b = std::clamp(int(b), 0, 255);
                 }
-
-
 
                 float depth = baricentricCoords.x * v1.z + baricentricCoords.y * v2.z + baricentricCoords.z * v3.z;
 

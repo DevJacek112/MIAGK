@@ -12,28 +12,9 @@ PointLight::PointLight(const float3 &position, const float3 &ambient, const floa
 float3 PointLight::calculate(VertexProcessor& vp, const float3& pointPosition, const float3& normal)
 {
     // 1. N - normal do przestrzeni widoku
-    float4 N4 = (vp._world2view * float4(normal.x, normal.y, normal.z, 0.0f));
+    float4 N4 = (vp._world2view * float4(-normal.x, -normal.y, -normal.z, 0.0f));
     float3 N = float3(N4.x, N4.y, N4.z);
     N.Normalize();
-
-
-    /*for (int i = 0; i < 3; i++) {
-        std::cout << normal.x << ", "<< normal.y << ", "<< normal.z;
-        std::cout << std::endl;
-    }
-    std::cout << std::endl;
-    std::cout << std::endl;
-    std::cout << std::endl;*/
-
-    /*for (int i = 0; i < 4; i++) {
-        for (int j = 0; j < 4; j++) {
-            std::cout << vp._world2view[i][j] << ", ";
-        }
-        std::cout << std::endl;
-    }
-    std::cout << std::endl;
-    std::cout << std::endl;
-    std::cout << std::endl;*/
 
     // 2. V - wektor do kamery (przeciwny do przekształconej pozycji wierzchołka)
     float4 posView4 = (vp._world2view * float4(pointPosition.x, pointPosition.y, pointPosition.z, 1.0f));
