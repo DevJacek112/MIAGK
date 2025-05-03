@@ -38,6 +38,7 @@ int main() {
     //std::shared_ptr<Cone> cube8 = std::make_shared<Cone>(float3(-1,-1,-1), 0.5, 32, camera._view2Proj, camera._world2View, camera._obj2world);
 
     //LIGHT
+    cube2->lightningMode = NONE;
 
     float3 directionalDir(1.0f, 0.0f, 0.0f);
     directionalDir.Normalize();
@@ -83,7 +84,7 @@ int main() {
     //cube8->GenerateVertexColors();
 
     Texture tex1, tex2;
-    tex1.LoadFromTGA("../tex3.tga");
+    tex1.LoadFromTGA("../tex.tga");
     tex2.LoadFromTGA("../tex3.tga");
     pixelBuffer->tex1 = std::make_shared<Texture>(tex1);
     pixelBuffer->tex2 = std::make_shared<Texture>(tex2);
@@ -94,7 +95,7 @@ int main() {
     //cube3->textureNumber = 1;
     //cube4->textureNumber = 1;
     //cube5->textureNumber = 1;
-    cube6->textureNumber = 1;
+    cube6->textureNumber = 2;
     //cube7->textureNumber = 1;
     //cube8->textureNumber = 1;
 
