@@ -37,7 +37,6 @@ int main() {
     //std::shared_ptr<Cone> cube7 = std::make_shared<Cone>(float3(-1,1,-1), 0.5, 32, camera._view2Proj, camera._world2View, camera._obj2world);
     //std::shared_ptr<Cone> cube8 = std::make_shared<Cone>(float3(-1,-1,-1), 0.5, 32, camera._view2Proj, camera._world2View, camera._obj2world);
 
-
     //LIGHT
 
     float3 directionalDir(1.0f, 0.0f, 0.0f);
