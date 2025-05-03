@@ -1,91 +1,84 @@
 #include "Cylinder.h"
 
-Cylinder::Cylinder(float3 position, float size, int slices, float4x4 view2project, float4x4 world2view, float4x4 object2world)
+Cylinder::Cylinder(float3 position, float size, int segments, float4x4 view2project, float4x4 world2view, float4x4 object2world)
 {
     _vertexProcessor = std::make_shared<VertexProcessor>();
     _vertexProcessor->_view2proj = view2project;
     _vertexProcessor->_world2view = world2view;
     _vertexProcessor->_obj2world = object2world;
 
-    if (slices < 3) slices = 3;
-    int stacks = 1; // możesz też dodać to jako parametr
+    _vertices.clear();
+    _indices.clear();
 
-    float radius = size * 0.5f;
+    float radius = size / 2;
     float height = size;
+    float3 top_center = position + float3(0, height / 2.0f, 0);
+    float3 bottom_center = position - float3(0, height / 2.0f, 0);
+    std::vector<float3> top_ring;
+    std::vector<float3> bottom_ring;
 
-    float angleStep = 2.0f * M_PI / slices;
-    float heightStep = height / stacks;
-
-    // === Side Vertices ===
-    for (int j = 0; j <= stacks; ++j) {
-        float z = -height * 0.5f + j * heightStep;
-
-        for (int i = 0; i < slices; ++i) {
-            float angle = i * angleStep;
-            float x = cos(angle) * radius;
-            float y = sin(angle) * radius;
-            float3 normal = float3(x, y, 0).GetNormalized();
-
-            float3 pos = float3(x, y, z) + position;
-            float3 color = float3(1, 1, 1); // albo losuj jeśli chcesz
-
-            _vertices.push_back({ pos, normal, std::make_shared<Color>(color.r * 255, color.g * 255, color.b * 255, 255) });
-        }
-    }
-
-    // === Side Indices ===
-    for (int j = 0; j < stacks; ++j) {
-        for (int i = 0; i < slices; ++i) {
-            int curr = j * slices + i;
-            int next = j * slices + (i + 1) % slices;
-            int upper = (j + 1) * slices + i;
-            int upperNext = (j + 1) * slices + (i + 1) % slices;
-
-            _indices.push_back({ curr, next, upper });
-            _indices.push_back({ next, upperNext, upper });
-        }
-    }
-
-    // === Bottom Cap ===
-    int bottomCenterIndex = _vertices.size();
-    _vertices.push_back({ position - float3(0, 0, height * 0.5f), float3(0, 0, -1), std::make_shared<Color>(255, 255, 255, 255) });
-
-    int bottomStart = _vertices.size();
-    for (int i = 0; i < slices; ++i) {
-        float angle = i * angleStep;
+    for (int i = 0; i < segments; i++) {
+        float angle = 2 * M_PI * i / segments;
         float x = cos(angle) * radius;
-        float y = sin(angle) * radius;
-
-        float3 pos = float3(x, y, -height * 0.5f) + position;
-        _vertices.push_back({ pos, float3(0, 0, -1), std::make_shared<Color>(255, 255, 255, 255) });
+        float z = sin(angle) * radius;
+        top_ring.push_back(top_center + float3(x, 0, z));
+        bottom_ring.push_back(bottom_center + float3(x, 0, z));
     }
 
-    for (int i = 0; i < slices; ++i) {
-        int curr = bottomStart + i;
-        int next = bottomStart + (i + 1) % slices;
-        _indices.push_back({ next, curr, bottomCenterIndex });
+    for (int i = 0; i < segments; i++) {
+        float3 p0 = top_ring[i];
+        float3 p1 = top_ring[(i+1)%segments];
+        float3 p2 = bottom_ring[(i+1)%segments];
+        float3 p3 = bottom_ring[i];
+
+        float3 normal = -(p1 - p0).Cross(p3 - p0).GetNormalized();
+
+        int baseIndex = static_cast<int>(_vertices.size());
+
+        _vertices.push_back({ p0, normal, std::make_shared<Color>(255, 255, 0, 0) });
+        _vertices.push_back({ p1, normal, std::make_shared<Color>(255, 255, 0, 0) });
+        _vertices.push_back({ p2, normal, std::make_shared<Color>(255, 255, 0, 0) });
+        _vertices.push_back({ p3, normal, std::make_shared<Color>(255, 255, 0, 0) });
+
+        _indices.push_back({ baseIndex + 0, baseIndex + 2, baseIndex + 1 });
+        _indices.push_back({ baseIndex + 0, baseIndex + 3, baseIndex + 2 });
+
     }
 
-    // === Top Cap ===
-    int topCenterIndex = _vertices.size();
-    _vertices.push_back({ position + float3(0, 0, height * 0.5f), float3(0, 0, 1), std::make_shared<Color>(255, 255, 255, 255) });
 
-    int topStart = _vertices.size();
-    for (int i = 0; i < slices; ++i) {
-        float angle = i * angleStep;
-        float x = cos(angle) * radius;
-        float y = sin(angle) * radius;
+    for (int i = 0; i < segments; i++) {
+        float3 p0 = top_center;
+        float3 p1 = top_ring[(i+1)%segments];
+        float3 p2 = top_ring[i];
 
-        float3 pos = float3(x, y, height * 0.5f) + position;
-        _vertices.push_back({ pos, float3(0, 0, 1), std::make_shared<Color>(255, 255, 255, 255) });
+        float3 normal = float3(0, -1, 0);
+
+        int baseIndex = static_cast<int>(_vertices.size());
+
+        _vertices.push_back({ p0, normal, std::make_shared<Color>(0, 255, 0, 0) });
+        _vertices.push_back({ p1, normal, std::make_shared<Color>(0, 255, 0, 0) });
+        _vertices.push_back({ p2, normal, std::make_shared<Color>(0, 255, 0, 0) });
+
+        _indices.push_back({ baseIndex + 0, baseIndex + 2, baseIndex + 1 });
+
     }
 
-    for (int i = 0; i < slices; ++i) {
-        int curr = topStart + i;
-        int next = topStart + (i + 1) % slices;
-        _indices.push_back({ topCenterIndex, curr, next });
+    for (int i = 0; i < segments; i++) {
+        float3 p0 = bottom_center;
+        float3 p1 = bottom_ring[i];
+        float3 p2 = bottom_ring[(i+1)%segments];
+
+        float3 normal = float3(0, 1, 0);
+
+        int baseIndex = static_cast<int>(_vertices.size());
+
+        _vertices.push_back({ p0, normal, std::make_shared<Color>(255, 0, 0, 0) });
+        _vertices.push_back({ p1, normal, std::make_shared<Color>(255, 0, 0, 0) });
+        _vertices.push_back({ p2, normal, std::make_shared<Color>(255, 0, 0, 0) });
+
+        _indices.push_back({ baseIndex + 0, baseIndex + 2, baseIndex + 1 });
+
     }
 
     GenerateVertexColors();
 }
-
