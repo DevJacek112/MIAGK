@@ -96,6 +96,7 @@ int main() {
     //cube4->textureNumber = 1;
     //cube5->textureNumber = 1;
     cube6->textureNumber = 2;
+    cube6->isCube = true;
     //cube7->textureNumber = 1;
     //cube8->textureNumber = 1;
 

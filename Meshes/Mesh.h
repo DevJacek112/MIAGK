@@ -34,6 +34,10 @@ public:
     std::vector<Index> _indices;
     std::shared_ptr<VertexProcessor> _vertexProcessor;
 
+    virtual ~Mesh() = default;
+
+    bool isCube = false;
+
     float _size;
     float3 _centerPosition;
     int textureNumber;

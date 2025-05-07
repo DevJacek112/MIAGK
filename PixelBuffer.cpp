@@ -7,6 +7,7 @@
 
 #include "pixelbuffer.h"
 #include "Light/Light.h"
+#include "Meshes/Cube.h"
 #include "Meshes/Mesh.h"
 
 struct TexCoord {
@@ -143,15 +144,6 @@ void PixelBuffer::DrawTriangle(
                 float3 baricentricCoords = GetBaricentricTriangleCoords(v1.x, v1.y, v2.x, v2.y, v3.x, v3.y, x, y);
                 if (mesh->lightningMode == PIXELS) {
 
-                    float u = baricentricCoords.x * uv1.x + baricentricCoords.y * uv2.x + baricentricCoords.z * uv3.x;
-                    float v = baricentricCoords.x * uv1.y + baricentricCoords.y * uv2.y + baricentricCoords.z * uv3.y;
-
-                    Color texColor = SampleTexture(textureNumber, u, v);
-
-                    r = texColor._r;
-                    g = texColor._g;
-                    b = texColor._b;
-
                     // Współczynniki barycentryczne względem v3
                     float v3x = v3.x, v3y = v3.y;
                     float denom = dy23 * (-dx31) + (-dx23) * (-dy31);
@@ -164,6 +156,38 @@ void PixelBuffer::DrawTriangle(
                     float3 interpolatedNormal = normal1 * k1 + normal2 * k2 + normal3 * k3;
                     interpolatedNormal.Normalize();
 
+                    if (mesh->isCube) {
+                        float u = baricentricCoords.x * uv1.x + baricentricCoords.y * uv2.x + baricentricCoords.z * uv3.x;
+                        float v = baricentricCoords.x * uv1.y + baricentricCoords.y * uv2.y + baricentricCoords.z * uv3.y;
+
+                        Color texColor = SampleTexture(textureNumber, u, v);
+
+                        r = texColor._r;
+                        g = texColor._g;
+                        b = texColor._b;
+                    }else {
+
+                        /*float3 interpolatedNormal = normal1 * k1 + normal2 * k2 + normal3 * k3;
+                        interpolatedNormal.Normalize();*/
+
+                        float4 w1_float4 = float4((mesh->_vertexProcessor->_obj2world * float4(pos1.x, pos1.y, pos1.z, 1.0f)));
+                        float3 w1_float3 = float3(w1_float4.x, w1_float4.y, w1_float4.z);
+
+                        float4 w2_float4 = float4((mesh->_vertexProcessor->_obj2world * float4(pos2.x, pos2.y, pos2.z, 1.0f)));
+                        float3 w2_float3 = float3(w2_float4.x, w2_float4.y, w2_float4.z);
+
+                        float4 w3_float4 = float4((mesh->_vertexProcessor->_obj2world * float4(pos3.x, pos3.y, pos3.z, 1.0f)));
+                        float3 w3_float3 = float3(w3_float4.x, w3_float4.y, w3_float4.z);
+
+                        float3 interpolatedWorldPos = w1_float3 * k1 + w2_float3 * k2 + w3_float3 * k3;
+                        float3 direction = interpolatedWorldPos;
+                        direction.Normalize();
+                        Color texColor = SampleCubeTexture(direction, textureNumber);
+
+                        r = texColor._r;
+                        g = texColor._g;
+                        b = texColor._b;
+                    }
                     // Interpolacja pozycji w świecie
                     float4 w1_float4 = float4((mesh->_vertexProcessor->_obj2world * float4(pos1.x, pos1.y, pos1.z, 1.0f)));
                     float3 w1_float3 = float3(w1_float4.x, w1_float4.y, w1_float4.z);
@@ -195,18 +219,49 @@ void PixelBuffer::DrawTriangle(
                     g = finalColor->_g;
                     b = finalColor->_b;
                 }else if (mesh->lightningMode == NONE) {
-                    float u = baricentricCoords.x * uv1.x + baricentricCoords.y * uv2.x + baricentricCoords.z * uv3.x;
-                    float v = baricentricCoords.x * uv1.y + baricentricCoords.y * uv2.y + baricentricCoords.z * uv3.y;
 
-                    Color texColor = SampleTexture(textureNumber, u, v);
+                    float v3x = v3.x, v3y = v3.y;
+                    float denom = dy23 * (-dx31) + (-dx23) * (-dy31);
 
-                    r = texColor._r;
-                    g = texColor._g;
-                    b = texColor._b;
+                    float k1 = ((dy23 * (x - v3x)) + (-dx23) * (y - v3y)) / denom;
+                    float k2 = ((dy31 * (x - v3x)) + (-dx31) * (y - v3y)) / denom;
+                    float k3 = 1.0f - k1 - k2;
+                    if (mesh->isCube) {
+                        float u = baricentricCoords.x * uv1.x + baricentricCoords.y * uv2.x + baricentricCoords.z * uv3.x;
+                        float v = baricentricCoords.x * uv1.y + baricentricCoords.y * uv2.y + baricentricCoords.z * uv3.y;
 
-                    r = std::clamp(int(r), 0, 255);
-                    g = std::clamp(int(g), 0, 255);
-                    b = std::clamp(int(b), 0, 255);
+                        Color texColor = SampleTexture(textureNumber, u, v);
+
+                        r = texColor._r;
+                        g = texColor._g;
+                        b = texColor._b;
+                    }else {
+
+                        /*float3 interpolatedNormal = normal1 * k1 + normal2 * k2 + normal3 * k3;
+                        interpolatedNormal.Normalize();*/
+
+                        float4 w1_float4 = float4((mesh->_vertexProcessor->_obj2world * float4(pos1.x, pos1.y, pos1.z, 1.0f)));
+                        float3 w1_float3 = float3(w1_float4.x, w1_float4.y, w1_float4.z);
+
+                        float4 w2_float4 = float4((mesh->_vertexProcessor->_obj2world * float4(pos2.x, pos2.y, pos2.z, 1.0f)));
+                        float3 w2_float3 = float3(w2_float4.x, w2_float4.y, w2_float4.z);
+
+                        float4 w3_float4 = float4((mesh->_vertexProcessor->_obj2world * float4(pos3.x, pos3.y, pos3.z, 1.0f)));
+                        float3 w3_float3 = float3(w3_float4.x, w3_float4.y, w3_float4.z);
+
+                        float3 interpolatedWorldPos = w1_float3 * k1 + w2_float3 * k2 + w3_float3 * k3;
+                        float3 direction = interpolatedWorldPos;
+                        direction.Normalize();
+                        Color texColor = SampleCubeTexture(direction, textureNumber);
+
+                        r = texColor._r;
+                        g = texColor._g;
+                        b = texColor._b;
+
+                        r = std::clamp(int(r), 0, 255);
+                        g = std::clamp(int(g), 0, 255);
+                        b = std::clamp(int(b), 0, 255);
+                    }
                 }
 
                 float depth = baricentricCoords.x * v1.z + baricentricCoords.y * v2.z + baricentricCoords.z * v3.z;
@@ -219,4 +274,32 @@ void PixelBuffer::DrawTriangle(
         }
     }
 }
+
+Color PixelBuffer::SampleCubeTexture(const float3& dir, int numberOfTexture) {
+    float absX = fabs(dir.x);
+    float absY = fabs(dir.y);
+    float absZ = fabs(dir.z);
+
+    int face;
+    float u, v;
+
+    if (absX >= absY && absX >= absZ) {
+        // X face
+        face = dir.x > 0 ? 0 : 1;
+        u = dir.z / absX * 0.5f + 0.5f;
+        v = dir.y / absX * 0.5f + 0.5f;
+    } else if (absY >= absX && absY >= absZ) {
+        // Y face
+        face = dir.y > 0 ? 2 : 3;
+        u = dir.x / absY * 0.5f + 0.5f;
+        v = dir.z / absY * 0.5f + 0.5f;
+    } else {
+        // Z face
+        face = dir.z > 0 ? 4 : 5;
+        u = dir.x / absZ * 0.5f + 0.5f;
+        v = dir.y / absZ * 0.5f + 0.5f;
+    }
+    return SampleTexture(numberOfTexture, u, v);
+}
+
 

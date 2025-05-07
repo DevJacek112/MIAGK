@@ -45,6 +45,8 @@ public:
                       shared_ptr<Color> color3, float3 uv1, float3 uv2, float3 uv3, int textureNumber, float3 normal1, float3 normal2, float3
                       normal3, std::shared_ptr<Mesh> mesh, float3 pos1, float3 pos2, float3 pos3);
 
+    Color SampleCubeTexture(const float3 &dir, int numberOfTexture);
+
     float3 GetBaricentricTriangleCoords(int x1, int y1, int x2, int y2, int x3, int y3, int actualX, int actualY);
 
     std::shared_ptr<Color> InterpolateColor(std::shared_ptr<Color> c1, std::shared_ptr<Color> c2,
